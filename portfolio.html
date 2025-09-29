@@ -268,9 +268,6 @@
                 controls.target.lerp(pickObjPosition,0.1)
                 camera.position.lerp(cameraPosition,0.1)
             }
-            if(whatGotPick == "Box"){
-                Box.position.set(-2, 0.8, 0)
-            }
             controls.update();
             renderer.render(scene, camera);                                                             
             requestAnimationFrame(loop);
