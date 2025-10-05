@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background-image: url('https://i.pinimg.com/1200x/87/86/4a/87864a08e7ba6602314bd223548b3ac2.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        canvas {
+            display: block
+        }
+
+        .fadeInOut {
+            animation: fadeInOutAnimation 0.5s ease-in-out forwards
+        }
+
+        @keyframes fadeInOutAnimation {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 100;
+            }
+        }
+
+        .slideInDialog {
+            animation: slideInDialogAnimation 0.5s ease-in-out forwards
+        }
+
+        @keyframes slideInDialogAnimation {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                transform: translateX(0px);
+                opacity: 100;
+            }
+        }
+
+        .slideIn {
+            animation: slideInAnimation 1s ease-in-out forwards
+        }
+
+        @keyframes slideInAnimation {
+            0% {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            50% {
+                opacity: 50;
+                transform: translateX(-10px);
+            }
+
+            100% {
+                opacity: 100;
+                transform: translateX(0px);
+            }
+        }
+
+        .slideOut {
+            animation: slideOutAnimation 0.5s ease-in-out forwards;
+        }
+
+        @keyframes slideOutAnimation {
+            from {
+                opacity: 100;
+                transform: translateX(0px);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+        }
+
+        .myquestion {
+            transition: 0.3s ease-out;
+        }
+
+        .myquestion:hover {
+            font-size: 23px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+
+</head>
+
+<body>
+    <!-- <h1 id="status" style="color: white; position: absolute;">Lock: on</h1> -->
+    <h1 style="position: absolute; right: 3%; color: gold;">$0</h1>
+    <h1 id="welcome"
+        style="position: absolute; top: 40%; right: 47%; font-size: 200px; color: red; pointer-events: none;">Welcome!
+    </h1>
+    <div id="boxDialog"
+        style="position: absolute; color: white; left: 10%; top: 30%; display: none; height: 400px; pointer-events: none;">
+        <img src="https://images.stockcake.com/public/9/0/0/900ca585-62ce-44f5-8345-85faaa60a0b0_large/amused-monkey-face-stockcake.jpg"
+            alt="not found">
+    </div>
+    <div id="sphereDialog"
+        style="position: absolute; color: white; left: 10%; top: 10%; display: none; flex-direction: column; pointer-events: none;">
+        <h3>
+            Hello, i'm Krit.
+        </h3>
+        <h3>
+            I'm a creative, hardworking individual, passionate about technology, design, and learning. I enjoys
+            challenges, teamwork, and continuous self-improvement.
+        </h3>
+    </div>
+    <div id="coneDialog"
+        style="position: absolute; color: white; left: 10%; top: 20%; display: none; flex-direction: column;">
+        <h2 id="ansQuestion" style="color: red; pointer-events: none;">ask me some things</h2>
+        <h3 class="myquestion" style="cursor: pointer;" onclick="answer('myname')">
+            > What is your name?
+        </h3>
+        <h3 class="myquestion" style="cursor: pointer;" onclick="answer('myage')">
+            > How old are you?
+        </h3>
+        <h3 class="myquestion" style="cursor: pointer;" onclick="answer('mydoing')">
+            > What are you doing?
+        </h3>
+    </div>
+    <script>
+        (() => {
+            // GLTF model
+            const loaderBase = new THREE.GLTFLoader();
+            loaderBase.load(
+                "https://krttphs.github.io/Portfolio/base.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.position.set(0, 0, 0);
+                    scene.add(model);
+                }
+            );
+            const clock = new THREE.Clock();
+            let mixer;
+            let theMan;
+            const loaderTheman = new THREE.GLTFLoader();
+            loaderTheman.load(
+                "https://krttphs.github.io/Portfolio/theman/the_man_sitting.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.position.set(4.5, 0, 0);
+                    scene.add(model);
+                    theMan = model
+                    clickable.push(theMan)
+                    // ใช้งาน animation
+                    mixer = new THREE.AnimationMixer(model);
+                    gltf.animations.forEach(clip => {
+                        mixer.clipAction(clip).play();
+                    });
+
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            const mat = node.material;
+                            mat.transparent = false;
+                            mat.depthWrite = true;
+                            mat.depthTest = true;
+                            mat.alphaTest = 0.5; // กันพิกเซลโปร่งใส
+                            mat.needsUpdate = true;
+                        }
+                    });
+                }
+
+            );
+            // --- Scene / Camera / Renderer ---
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 100);
+
+            camera.position.set(-3, 2, 0);
+
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(innerWidth, innerHeight);
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.0;
+
+            document.body.appendChild(renderer.domElement);
+
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.target.set(0, 0.5, 0);
+            controls.enableDamping = true;
+
+            // --- Ground (เส้นกริดช่วยกะระยะ) ---
+            // const grid = new THREE.GridHelper(10, 10, 0x666666, 0x333333);
+            // grid.position.y = -0.001;
+            // scene.add(grid);
+
+            // const mainSpotLight = new THREE.SpotLight(0xffffff, 2);
+            // mainSpotLight.position.set(0, 5, 0)
+            // mainSpotLight.target.position.set(0, 0, 0);
+            // scene.add(mainSpotLight.target);
+            // scene.add(mainSpotLight);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+            dirLight.position.set(5, 10, 5);
+            scene.add(dirLight);
+
+            const ptLight = new THREE.PointLight(0xffaa00, 1, 50);
+            ptLight.position.set(0, 5, 0);
+            scene.add(ptLight);
+
+            //const ambient = new THREE.AmbientLight(0x404040, 0.5); 
+            //scene.add(ambient);
+
+            // --- Objects (3 ชิ้น / สีต่างกัน / ไม่ต้องมีไฟเพราะใช้ MeshBasic) ---
+            const clickable = [];
+            let pickObjPosition = new THREE.Vector3();
+            let cameraPosition = new THREE.Vector3(-5, 1, 0);
+            function addObj(mesh, pos, name) {
+                mesh.position.copy(pos);
+                mesh.name = name;
+                scene.add(mesh);
+                clickable.push(mesh);
+                return mesh;
+            }
+
+            const Box = addObj(
+                new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), new THREE.MeshStandardMaterial({ color: 0xff6b6b })),
+                new THREE.Vector3(-2, 0.4, 0),
+                'Box'
+            );
+
+            const Sphere = addObj(
+                new THREE.Mesh(new THREE.SphereGeometry(0.45, 32, 16), new THREE.MeshStandardMaterial({ color: 0x5dff9b })),
+                new THREE.Vector3(0, 0.45, 0),
+                'Sphere'
+            );
+
+            addObj(
+                new THREE.Mesh(new THREE.ConeGeometry(0.5, 1, 24), new THREE.MeshStandardMaterial({ color: 0x5db6ff })),
+                new THREE.Vector3(2, 0.5, 0),
+                'Cone'
+            );
+
+            // const Plane = addObj(
+            //     new THREE.Mesh(
+            //         plane_geometry,
+            //         new THREE.MeshStandardMaterial({ color: 0x110000 })
+            //     ),
+            //     new THREE.Vector3(0, 0, 0),
+            //     "Plane"
+            // );
+            // const cylinder = addObj(
+            //     new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 1, 24), new THREE.MeshBasicMaterial({ color: 0xffbb00 })),
+            //     new THREE.Vector3(0, 0.5, -2),
+            //     'Cylinder'
+            // );
+            // cylinder.position.x = lerp(0.0, 2.0, 0.0)
+            // --- พรีเซ็ตตำแหน่งกล้องต่อวัตถุ (กำหนดง่าย ๆ) ---
+            const VIEWS = {
+                Box: { pos: new THREE.Vector3(-3, 1.4, 1.6), tar: new THREE.Vector3(-2, 0.4, 0) },
+                Sphere: { pos: new THREE.Vector3(0, 0.5, 2.0), tar: new THREE.Vector3(0, 3, 0) },
+                Cone: { pos: new THREE.Vector3(3, 1.6, -2.0), tar: new THREE.Vector3(2, 0.5, 0) },
+                Cylinder: { pos: new THREE.Vector3(0, 5, -5, 24), tar: new THREE.Vector3(0, 0.45, -2, 24) }
+            };
+
+            // --- Raycaster + คลิกเพื่อสลับมุม ---
+            const raycaster = new THREE.Raycaster();
+            const pointer = new THREE.Vector2();
+            function setPointer(e) {
+                const r = renderer.domElement.getBoundingClientRect();
+                const x = (e.clientX ?? e.touches[0].clientX) - r.left;
+                const y = (e.clientY ?? e.touches[0].clientY) - r.top;
+                pointer.x = (x / r.width) * 2 - 1;
+                pointer.y = -(y / r.height) * 2 + 1;
+            }
+            let whatGotPick = null
+            let stopControlsCamera = false;
+            function onPick(e) {
+                if (stopControlsCamera) return;
+                setPointer(e);
+                raycaster.setFromCamera(pointer, camera);
+                const hit = raycaster.intersectObjects(clickable, false)[0];
+                const hitMan = theMan ? raycaster.intersectObject(theMan, true)[0] : null;
+                if(hitMan){
+                    alert(hitMan.object.name)
+                }
+                
+                if (!hit) return;
+                const view = VIEWS[hit.object.name];
+                whatGotPick = hit.object.name;
+                cameraPosition = view.pos
+                pickObjPosition = hit.object.position;
+                if (!view) return;
+                showDialog()
+                // ย้ายแบบทันที (ถ้าอยากนุ่ม ๆ ค่อยเสริม lerp ทีหลัง)
+                // camera.position.copy(view.pos);
+                // controls.target.copy(view.tar);
+                controls.update();
+            }
+
+            renderer.domElement.addEventListener('click', onPick);
+            renderer.domElement.addEventListener('touchend', (e) => { onPick(e); }, { passive: true });
+
+            // --- Resize ---
+            addEventListener('resize', () => {
+                camera.aspect = innerWidth / innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(innerWidth, innerHeight);
+            });
+
+            function lerp(a, b, t) {
+                return a + (b - a) * t;   // t ใน [0..1]
+            }
+            const sphereDialog = document.getElementById("sphereDialog")
+            const boxDialog = document.getElementById("boxDialog")
+            const coneDialog = document.getElementById('coneDialog')
+            let t = null
+            let cylinderTarget = new THREE.Vector3();
+            let startCamera = true;
+            // --- Loop ---
+            function loop() {
+                if (startCamera) {
+                    const welcome = document.getElementById("welcome")
+                    if (camera.position.distanceTo(new THREE.Vector3(-3, 2, 0)) < 0.05) {
+                        welcome.classList.add("slideIn")
+                    }
+
+                    cameraPosition = new THREE.Vector3(3, 1, 0);
+                    pickObjPosition = new THREE.Vector3(5, 0.5, 0);
+                    controls.target.set(5, 0.8, 0);
+                    controls.target.lerp(pickObjPosition, 0.005)
+                    camera.position.lerp(cameraPosition, 0.005)
+                    if (camera.position.distanceTo(new THREE.Vector3(3, 1, 0)) < 0.05) {
+                        startCamera = false
+                        welcome.classList.remove("slideIn")
+                        requestAnimationFrame(() => {
+                            welcome.classList.add("slideOut")
+                        })
+                    }
+                }
+                else if (!stopControlsCamera) {
+                    controls.target.lerp(pickObjPosition, 0.01)
+                    camera.position.lerp(cameraPosition, 0.01)
+                }
+                controls.update();
+                renderer.render(scene, camera);
+                requestAnimationFrame(loop);
+            }
+            loop();
+            function animate() {
+                requestAnimationFrame(animate);
+
+                const delta = clock.getDelta();
+                if (mixer) mixer.update(delta);
+
+                renderer.render(scene, camera);
+            }
+            animate();
+            document.addEventListener("keydown", (e) => {
+                const status = document.getElementById("status")
+                console.log("Key pressed:", e.code);
+                if (e.code === "Space") {
+                    stopControlsCamera = !stopControlsCamera;
+                    if (!stopControlsCamera) {
+                        status.textContent = "Lock: on"
+                    } else {
+                        status.textContent = "Lock: off"
+                    }
+                }
+                else if (e.code === "Escape") {
+                    sphereDialog.style.display = "none"
+                    boxDialog.style.display = "none"
+                    coneDialog.style.display = "none"
+                    if (stopControlsCamera) {
+                        camera.position.set(3, 1, 0)
+                    }
+                    cameraPosition = new THREE.Vector3(3, 1, 0);
+                    controls.target.set(5, 0.8, 0);
+                    pickObjPosition = new THREE.Vector3(5, 0.5, 0);
+                }
+            })
+            function showDialog() {
+                sphereDialog.style.display = "none"
+                sphereDialog.classList.remove("slideInDialog")
+                boxDialog.style.display = "none"
+                boxDialog.classList.remove("fadeInOut")
+                coneDialog.style.display = "none"
+                coneDialog.classList.remove("slideInDialog")
+                if (whatGotPick == "Sphere") {
+                    sphereDialog.style.display = "flex"
+                    requestAnimationFrame(() => {
+                        sphereDialog.classList.add("slideInDialog")
+                    })
+                }
+                else if (whatGotPick == "Box") {
+                    boxDialog.style.display = "flex"
+                    requestAnimationFrame(() => {
+                        boxDialog.classList.add("fadeInOut")
+                    })
+                }
+                else if (whatGotPick == "Cone") {
+                    coneDialog.style.display = "flex"
+                    requestAnimationFrame(() => {
+                        coneDialog.classList.add("slideInDialog")
+                    })
+                }
+            }
+            let timeOut = null
+            window.answer = function (question) {
+                if (timeOut != null) return;
+                const ansQuestion = document.getElementById("ansQuestion")
+                if (question === "myname") {
+                    timeOut = ansQuestion.textContent = "Krit, isn't it?"
+                    setTimeout(() => {
+                        ansQuestion.textContent = "ask me some things"
+                        timeOut = null
+                    }, 1000)
+                }
+                else if (question === "myage") {
+                    timeOut = ansQuestion.textContent = "21, I think."
+                    setTimeout(() => {
+                        ansQuestion.textContent = "ask me some things"
+                        timeOut = null
+                    }, 1000)
+                }
+                else if (question === "mydoing") {
+                    timeOut = ansQuestion.textContent = "Does it really matter?"
+                    setTimeout(() => {
+                        ansQuestion.textContent = "ask me some things"
+                        timeOut = null
+                    }, 1000)
+                }
+            }
+        })();
+    </script>
+</body>
+
+</html>
