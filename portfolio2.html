@@ -489,6 +489,7 @@
                         descMySelf.style.display = "none"
                         myfood.style.display = "none"
                         myage.style.display = "none"
+                        mywork.style.display = "none"
                     }, 500)
                     setTimeout(() => {
                         ansQuestion.textContent = ".."
@@ -559,7 +560,7 @@
                         fadeInModel(myInfo,1000);
                     }, 2500)
                     setTimeout(() => {
-                        pickObjPosition = new THREE.Vector3(5, 0.8, 0);
+                        pickObjPosition = new THREE.Vector3(5, 0.5, 0);
                         controls.target.lerp(pickObjPosition, 0.005)
                         fadeOutModel(myInfo,1000);
                     }, 7000)
