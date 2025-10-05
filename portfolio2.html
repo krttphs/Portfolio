@@ -125,17 +125,32 @@
             challenges, teamwork, and continuous self-improvement.
         </h3>
     </div>
-    <div id="coneDialog"
-        style="position: absolute; color: white; left: 10%; top: 20%; display: none; flex-direction: column;">
-        <h2 id="ansQuestion" style="color: red; pointer-events: none;">ask me some things</h2>
-        <h3 class="myquestion" style="cursor: pointer;" onclick="answer('myname')">
-            > What is your name?
+    <div id="theManDialog"
+        style="position: absolute; color: white; left: 60%; top: 35%; display: none; flex-direction: column;">
+        <h2 id="ansQuestion" style="color: red; pointer-events: none;">สวัสดีครับ.</h2>
+        <h3 id="myname" class="myquestion" style="cursor: pointer;" onclick="answer('myname')">
+            > คุณเป็นใคร?
         </h3>
-        <h3 class="myquestion" style="cursor: pointer;" onclick="answer('myage')">
-            > How old are you?
+        <h3 id="descMySelf" class="myquestion" style="cursor: pointer; display: none;" onclick="answer('descMySelf')">
+            > อธิบายเกี่ยวกับตัวคุณหน่อย
         </h3>
-        <h3 class="myquestion" style="cursor: pointer;" onclick="answer('mydoing')">
-            > What are you doing?
+        <h3 id="myage" class="myquestion" style="cursor: pointer; display: none;" onclick="answer('myage')">
+            > คุณอายุเท่าไหร่?
+        </h3>
+        <h3 id="myfood" class="myquestion" style="cursor: pointer; display: none;" onclick="answer('myfood')">
+            > ชอบกินอาหารอะไรหรอ?
+        </h3>
+        <h3 id="mywork" class="myquestion" style="cursor: pointer; display: none; color: green;"
+            onclick="answer('mywork')">
+            > งานของฉัน
+        </h3>
+        <h3 id="descMySelf_q_1" class="myquestion" style="cursor: pointer; display: none;"
+            onclick="answer('descMySelf_q_1')">
+            > ก็เจ๋งดี!
+        </h3>
+        <h3 id="descMySelf_q_2" class="myquestion" style="cursor: pointer; display: none;"
+            onclick="answer('descMySelf_q_2')">
+            > ไม่มีรูปหรอ?
         </h3>
     </div>
     <script>
@@ -150,6 +165,23 @@
                     scene.add(model);
                 }
             );
+            let myInfo;
+            const loaderInfo = new THREE.GLTFLoader();
+            loaderInfo.load(
+                "https://krttphs.github.io/Portfolio/theman/myinfo.glb",
+                gltf => {
+                    myInfo = gltf.scene;
+                    myInfo.position.set(0, 0.2, 0);
+
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            node.material.transparent = true;
+                            node.material.opacity = 0;
+                        }
+                    });
+                    scene.add(myInfo);
+                }
+            );
             const clock = new THREE.Clock();
             let mixer;
             let theMan;
@@ -161,7 +193,6 @@
                     model.position.set(4.5, 0, 0);
                     scene.add(model);
                     theMan = model
-                    clickable.push(theMan)
                     // ใช้งาน animation
                     mixer = new THREE.AnimationMixer(model);
                     gltf.animations.forEach(clip => {
@@ -231,25 +262,6 @@
                 clickable.push(mesh);
                 return mesh;
             }
-
-            const Box = addObj(
-                new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), new THREE.MeshStandardMaterial({ color: 0xff6b6b })),
-                new THREE.Vector3(-2, 0.4, 0),
-                'Box'
-            );
-
-            const Sphere = addObj(
-                new THREE.Mesh(new THREE.SphereGeometry(0.45, 32, 16), new THREE.MeshStandardMaterial({ color: 0x5dff9b })),
-                new THREE.Vector3(0, 0.45, 0),
-                'Sphere'
-            );
-
-            addObj(
-                new THREE.Mesh(new THREE.ConeGeometry(0.5, 1, 24), new THREE.MeshStandardMaterial({ color: 0x5db6ff })),
-                new THREE.Vector3(2, 0.5, 0),
-                'Cone'
-            );
-
             // const Plane = addObj(
             //     new THREE.Mesh(
             //         plane_geometry,
@@ -266,10 +278,7 @@
             // cylinder.position.x = lerp(0.0, 2.0, 0.0)
             // --- พรีเซ็ตตำแหน่งกล้องต่อวัตถุ (กำหนดง่าย ๆ) ---
             const VIEWS = {
-                Box: { pos: new THREE.Vector3(-3, 1.4, 1.6), tar: new THREE.Vector3(-2, 0.4, 0) },
-                Sphere: { pos: new THREE.Vector3(0, 0.5, 2.0), tar: new THREE.Vector3(0, 3, 0) },
-                Cone: { pos: new THREE.Vector3(3, 1.6, -2.0), tar: new THREE.Vector3(2, 0.5, 0) },
-                Cylinder: { pos: new THREE.Vector3(0, 5, -5, 24), tar: new THREE.Vector3(0, 0.45, -2, 24) }
+                Cube: { pos: new THREE.Vector3(3, 1, 0), tar: new THREE.Vector3(5, 0.5, 0) }
             };
 
             // --- Raycaster + คลิกเพื่อสลับมุม ---
@@ -288,22 +297,19 @@
                 if (stopControlsCamera) return;
                 setPointer(e);
                 raycaster.setFromCamera(pointer, camera);
-                const hit = raycaster.intersectObjects(clickable, false)[0];
-                const hitMan = theMan ? raycaster.intersectObject(theMan, true)[0] : null;
-                if(hitMan){
-                    alert(hitMan.object.name)
-                }
-                
+
+                const objectsToPick = [...clickable];
+                if (theMan) objectsToPick.push(theMan);
+
+                const hit = raycaster.intersectObjects(objectsToPick, true)[0];
                 if (!hit) return;
+                // ถ้า hit เป็น child ของ theMan ให้ใช้ root ของ theMan
                 const view = VIEWS[hit.object.name];
                 whatGotPick = hit.object.name;
-                cameraPosition = view.pos
-                pickObjPosition = hit.object.position;
+                cameraPosition = view.pos.clone();
+                pickObjPosition = view.tar.clone();
                 if (!view) return;
                 showDialog()
-                // ย้ายแบบทันที (ถ้าอยากนุ่ม ๆ ค่อยเสริม lerp ทีหลัง)
-                // camera.position.copy(view.pos);
-                // controls.target.copy(view.tar);
                 controls.update();
             }
 
@@ -322,7 +328,7 @@
             }
             const sphereDialog = document.getElementById("sphereDialog")
             const boxDialog = document.getElementById("boxDialog")
-            const coneDialog = document.getElementById('coneDialog')
+            const theManDialog = document.getElementById('theManDialog')
             let t = null
             let cylinderTarget = new THREE.Vector3();
             let startCamera = true;
@@ -351,6 +357,7 @@
                     controls.target.lerp(pickObjPosition, 0.01)
                     camera.position.lerp(cameraPosition, 0.01)
                 }
+                TWEEN.update();
                 controls.update();
                 renderer.render(scene, camera);
                 requestAnimationFrame(loop);
@@ -379,7 +386,7 @@
                 else if (e.code === "Escape") {
                     sphereDialog.style.display = "none"
                     boxDialog.style.display = "none"
-                    coneDialog.style.display = "none"
+                    theManDialog.style.display = "none"
                     if (stopControlsCamera) {
                         camera.position.set(3, 1, 0)
                     }
@@ -393,8 +400,8 @@
                 sphereDialog.classList.remove("slideInDialog")
                 boxDialog.style.display = "none"
                 boxDialog.classList.remove("fadeInOut")
-                coneDialog.style.display = "none"
-                coneDialog.classList.remove("slideInDialog")
+                theManDialog.style.display = "none"
+                theManDialog.classList.remove("slideInDialog")
                 if (whatGotPick == "Sphere") {
                     sphereDialog.style.display = "flex"
                     requestAnimationFrame(() => {
@@ -407,10 +414,10 @@
                         boxDialog.classList.add("fadeInOut")
                     })
                 }
-                else if (whatGotPick == "Cone") {
-                    coneDialog.style.display = "flex"
+                else if (whatGotPick.toLowerCase().includes('cube')) {
+                    theManDialog.style.display = "flex"
                     requestAnimationFrame(() => {
-                        coneDialog.classList.add("slideInDialog")
+                        theManDialog.classList.add("slideInDialog")
                     })
                 }
             }
@@ -418,27 +425,186 @@
             window.answer = function (question) {
                 if (timeOut != null) return;
                 const ansQuestion = document.getElementById("ansQuestion")
+                const myname = document.getElementById("myname")
+                const myage = document.getElementById("myage")
+                const myfood = document.getElementById("myfood")
+                const descMySelf = document.getElementById("descMySelf")
+                const mywork = document.getElementById("mywork")
+                const descMySelf_q_1 = document.getElementById("descMySelf_q_1")
+                const descMySelf_q_2 = document.getElementById("descMySelf_q_2")
                 if (question === "myname") {
-                    timeOut = ansQuestion.textContent = "Krit, isn't it?"
+                    myname.classList.remove("slideInDialog")
+                    requestAnimationFrame(() => {
+                        myname.classList.add("slideOut")
+                    })
                     setTimeout(() => {
-                        ansQuestion.textContent = "ask me some things"
-                        timeOut = null
+                        ansQuestion.textContent = "."
+                        myname.style.display = "none"
+                    }, 500)
+                    setTimeout(() => {
+                        ansQuestion.textContent = ".."
                     }, 1000)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "..."
+                    }, 1500)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "ชื่อกฤตจ้า"
+                        timeOut = null
+                    }, 2000)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "."
+                    }, 3500)
+                    setTimeout(() => {
+                        ansQuestion.textContent = ".."
+                    }, 4000)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "..."
+                    }, 4500)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "มีอะไรอยากจะถามอีกมั้ยนะ?"
+                        timeOut = null
+                    }, 5000)
+                    timeOut = setTimeout(() => {
+                        descMySelf.style.display = "flex"
+                        myage.style.display = "flex"
+                        myfood.style.display = "flex"
+                        mywork.style.display = "flex"
+                        descMySelf.classList.add("slideInDialog")
+                        myage.classList.add("slideInDialog")
+                        myfood.classList.add("slideInDialog")
+                        mywork.classList.add("slideInDialog")
+                        timeOut = null
+                    }, 5500)
                 }
                 else if (question === "myage") {
-                    timeOut = ansQuestion.textContent = "21, I think."
+                    descMySelf.classList.remove("slideInDialog")
+                    myage.classList.remove("slideInDialog")
+                    myfood.classList.remove("slideInDialog")
+                    mywork.classList.remove("slideInDialog")
+                    requestAnimationFrame(() => {
+                        myage.classList.add("slideOut")
+                    })
                     setTimeout(() => {
-                        ansQuestion.textContent = "ask me some things"
-                        timeOut = null
-                    }, 1000)
-                }
-                else if (question === "mydoing") {
-                    timeOut = ansQuestion.textContent = "Does it really matter?"
+                        ansQuestion.textContent = "."
+                        descMySelf.style.display = "none"
+                        myfood.style.display = "none"
+                        myage.style.display = "none"
+                    }, 500)
                     setTimeout(() => {
-                        ansQuestion.textContent = "ask me some things"
-                        timeOut = null
+                        ansQuestion.textContent = ".."
                     }, 1000)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "..."
+                    }, 1500)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "21 ครับคิดว่า"
+                    }, 2000)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "."
+                    }, 3500)
+                    setTimeout(() => {
+                        ansQuestion.textContent = ".."
+                    }, 4000)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "..."
+                    }, 4500)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "มีอะไรอยากจะถามอีกมั้ยนะ?"
+                        timeOut = null
+                    }, 5000)
+                    timeOut = setTimeout(() => {
+                        myage.classList.remove("slideOut")
+                        descMySelf.style.display = "flex"
+                        myage.style.display = "flex"
+                        myfood.style.display = "flex"
+                        mywork.style.display = "flex"
+                        requestAnimationFrame(() => {
+                            myage.classList.add("slideInDialog")
+                        })
+                        mywork.classList.add("slideInDialog")
+                        descMySelf.classList.add("slideInDialog")
+                        myfood.classList.add("slideInDialog")
+                        timeOut = null
+                    }, 5500)
                 }
+                else if (question === "descMySelf") {
+                    descMySelf.classList.remove("slideInDialog")
+                    myage.classList.remove("slideInDialog")
+                    myfood.classList.remove("slideInDialog")
+                    mywork.classList.remove("slideInDialog")
+                    requestAnimationFrame(() => {
+                        descMySelf.classList.add("slideOut")
+                    })
+                    
+                    setTimeout(()=>{
+                        descMySelf.style.display = "none"
+                        myfood.style.display = "none"
+                        myage.style.display = "none"
+                        mywork.style.display = "none"
+                        ansQuestion.textContent = "."
+                    },500)
+                    setTimeout(() => {
+                        ansQuestion.textContent = ".."
+                    }, 1000)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "..."
+                    }, 1500)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "ได้สิ!"
+                    }, 2000)
+                    setTimeout(() => {
+                        ansQuestion.textContent = ""
+                        pickObjPosition = new THREE.Vector3(5, 1, 0);
+                        controls.target.lerp(pickObjPosition, 0.005)
+                        fadeInModel(myInfo,1000);
+                    }, 2500)
+                    setTimeout(() => {
+                        pickObjPosition = new THREE.Vector3(5, 0.8, 0);
+                        controls.target.lerp(pickObjPosition, 0.005)
+                        fadeOutModel(myInfo,1000);
+                    }, 7000)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "."
+                    }, 8000)
+                    setTimeout(() => {
+                        ansQuestion.textContent = ".."
+                    }, 8500)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "..."
+                    }, 9000)
+                    setTimeout(() => {
+                        ansQuestion.textContent = "เป็นไงบ้าง?"
+                    }, 9500)
+                    timeOut = setTimeout(()=>{
+                        descMySelf_q_1.style.display = "flex"
+                        descMySelf_q_2.style.display = "flex"
+                        descMySelf_q_1.classList.add("slideInDialog")
+                        descMySelf_q_2.classList.add("slideInDialog")
+                        timeOut = null
+                    },10000)
+                }
+            }
+            function fadeInModel(model, duration = 1000) {
+                if (!model) return;
+                model.traverse(node => {
+                    if (node.isMesh) {
+                        new TWEEN.Tween({ opacity: node.material.opacity })
+                            .to({ opacity: 1 }, duration)
+                            .onUpdate(({ opacity }) => node.material.opacity = opacity)
+                            .start();
+                    }
+                });
+            }
+            function fadeOutModel(model, duration = 1000) {
+                if (!model) return;
+                model.traverse(node => {
+                    if (node.isMesh) {
+                        new TWEEN.Tween({ opacity: node.material.opacity })
+                            .to({ opacity: 0 }, duration)
+                            .onUpdate(({ opacity }) => node.material.opacity = opacity)
+                            .start();
+                    }
+                });
             }
         })();
     </script>
