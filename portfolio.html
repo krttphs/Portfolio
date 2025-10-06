@@ -146,11 +146,7 @@
         </h3>
         <h3 id="descMySelf_q_1" class="myquestion" style="cursor: pointer; display: none;"
             onclick="answer('descMySelf_q_1')">
-            > ก็เจ๋งดี!
-        </h3>
-        <h3 id="descMySelf_q_2" class="myquestion" style="cursor: pointer; display: none;"
-            onclick="answer('descMySelf_q_2')">
-            > ไม่มีรูปหรอ?
+            > เท่มาก!
         </h3>
     </div>
     <script>
@@ -431,7 +427,6 @@
                 const descMySelf = document.getElementById("descMySelf")
                 const mywork = document.getElementById("mywork")
                 const descMySelf_q_1 = document.getElementById("descMySelf_q_1")
-                const descMySelf_q_2 = document.getElementById("descMySelf_q_2")
                 if (question === "myname") {
                     myname.classList.remove("slideInDialog")
                     requestAnimationFrame(() => {
@@ -577,12 +572,44 @@
                         ansQuestion.textContent = "เป็นไงบ้าง?"
                     }, 9500)
                     timeOut = setTimeout(()=>{
+                        descMySelf.classList.remove("slideOut")
                         descMySelf_q_1.style.display = "flex"
-                        descMySelf_q_2.style.display = "flex"
                         descMySelf_q_1.classList.add("slideInDialog")
-                        descMySelf_q_2.classList.add("slideInDialog")
                         timeOut = null
                     },10000)
+                }
+                else if(question === "descMySelf_q_1"){
+                    requestAnimationFrame(()=>{
+                        descMySelf_q_1.classList.add("slideOut")
+                    })
+                    setTimeout(()=>{
+                        ansQuestion.textContent = "."
+                        descMySelf_q_1.style.display = "none"
+                    },500)
+                    setTimeout(()=>{
+                        ansQuestion.textContent = ".."
+                    },1000)
+                    setTimeout(()=>{
+                        ansQuestion.textContent = "..."
+                    },1500)
+                    setTimeout(()=>{
+                        ansQuestion.textContent = "อยู่แล้ว อิอิ"
+                    },2000)
+                    setTimeout(()=>{
+                        ansQuestion.textContent = "มีอะไรอยากจะถามอีกมั้ยนะ?"
+                    },3000)
+                    timeOut = setTimeout(()=>{
+                        descMySelf.style.display = "flex"
+                        myage.style.display = "flex"
+                        myfood.style.display = "flex"
+                        mywork.style.display = "flex"
+
+                        descMySelf.classList.add("slideInDialog")
+                        myage.classList.add("slideInDialog")
+                        mywork.classList.add("slideInDialog")
+                        myfood.classList.add("slideInDialog")
+                        timeOut = null
+                    },3500)
                 }
             }
             function fadeInModel(model, duration = 1000) {
