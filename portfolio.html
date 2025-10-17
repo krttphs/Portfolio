@@ -105,44 +105,90 @@
 </head>
 
 <body>
+    <div id="loading-screen" style="
+  position: fixed;
+  inset: 0;
+  background-color: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+">
+        <h1 style="font-size: 2rem;">Loading...</h1>
+        <div id="progress-bar" style="
+    width: 60%;
+    height: 10px;
+    background-color: #333;
+    margin-top: 20px;
+    border-radius: 5px;
+    overflow: hidden;
+  ">
+            <div id="progress" style="
+      width: 0%;
+      height: 100%;
+      background-color: gold;
+      transition: width 0.3s ease;
+    "></div>
+        </div>
+    </div>
+
     <!-- <h1 id="status" style="color: white; position: absolute;">Lock: on</h1> -->
-    <h1 style="position: absolute; right: 3%; color: gold;">$0</h1>
     <h1 id="welcome"
-        style="position: absolute; top: 40%; right: 47%; font-size: 200px; color: red; pointer-events: none;">Welcome!
+        style="position: absolute; top: 60%; right: 47%; font-size: 200px; color: red; pointer-events: none;">Welcome!
     </h1>
     <div id="boxDialog"
         style="position: absolute; color: white; left: 10%; top: 30%; display: none; height: 400px; pointer-events: none;">
         <img src="https://images.stockcake.com/public/9/0/0/900ca585-62ce-44f5-8345-85faaa60a0b0_large/amused-monkey-face-stockcake.jpg"
             alt="not found">
     </div>
-    <div id="sphereDialog"
-        style="position: absolute; color: white; left: 10%; top: 10%; display: none; flex-direction: column; pointer-events: none;">
+    <div id="PBRDialog"
+        style="position: absolute; color: white; left: 5%; top: 10%; display: none; flex-direction: column;">
         <h3>
-            Hello, i'm Krit.
+            PBR (Physically Based Rendering) คือการเรนเดอร์ให้วัตถุดูสมจริงโดยจำลองการสะท้อนแสงตามคุณสมบัติของวัสดุ
         </h3>
         <h3>
-            I'm a creative, hardworking individual, passionate about technology, design, and learning. I enjoys
-            challenges, teamwork, and continuous self-improvement.
+            เช่น Albedo สีพื้นฐาน, Metallic ระบุโลหะ, Roughness ความเรียบ/หยาบ, และใช้ Normal Map กับ Ambient Occlusion
+            เพิ่มรายละเอียดและมิติของพื้นผิว
+        </h3>
+    </div>
+    <div id="CelShadingDialog"
+        style="position: absolute; color: white; left: 5%; top: 10%; display: none; flex-direction: column;">
+        <h3>
+            Cel Shading คือเทคนิคเรนเดอร์สไตล์การ์ตูน ให้วัตถุดูเหมือนถูกวาดด้วยเส้นและสีเรียบ
+            ใช้การแบ่งโทนสีและขอบเขตเงาชัดเจน แทนการไล่สีเรียบเหมือนโลกจริง
+        </h3>
+        <h3>
+            ทำงานโดยคำนวณมุมของแสงกับพื้นผิว แยกเป็นโทนสีต่าง ๆ และวาดเส้นขอบรอบวัตถุเพื่อเพิ่มสไตล์การ์ตูน
+        </h3>
+    </div>
+    <div id="VertexShaderDialog"
+        style="position: absolute; color: white; left: 5%; top: 10%; display: none; flex-direction: column;">
+        <h3>
+            Vertex Shader คือโปรแกรมที่รันบน GPU เพื่อปรับตำแหน่งและคุณสมบัติของแต่ละจุด (vertex) ของโมเดล 3D
+        </h3>
+        <h3>
+            ใช้คำนวณการเคลื่อนที่ หมุน ขยาย หรือบิดเบือนวัตถุ และสามารถส่งข้อมูลให้ Pixel Shader เพื่อเรนเดอร์สีและแสง
         </h3>
     </div>
     <div id="theManDialog"
         style="position: absolute; color: white; left: 60%; top: 35%; display: none; flex-direction: column;">
-        <h2 id="ansQuestion" style="color: red; pointer-events: none;">สวัสดีครับ.</h2>
-        <h3 id="myname" class="myquestion" style="cursor: pointer;" onclick="answer('myname')">
+        <h2 id="ansQuestion" style="color: red; pointer-events: none;">อยากจะถามอะไรไหมครับ.</h2>
+        <!-- <h3 id="myname" class="myquestion" style="cursor: pointer;" onclick="answer('myname')">
             > คุณเป็นใคร?
-        </h3>
-        <h3 id="descMySelf" class="myquestion" style="cursor: pointer; display: none;" onclick="answer('descMySelf')">
+        </h3> -->
+        <h3 id="descMySelf" class="myquestion" style="cursor: pointer;" onclick="answer('descMySelf')">
             > อธิบายเกี่ยวกับตัวคุณหน่อย
         </h3>
-        <h3 id="myage" class="myquestion" style="cursor: pointer; display: none;" onclick="answer('myage')">
+        <h3 id="myage" class="myquestion" style="cursor: pointer;" onclick="answer('myage')">
             > คุณอายุเท่าไหร่?
         </h3>
-        <h3 id="myfood" class="myquestion" style="cursor: pointer; display: none;" onclick="answer('myfood')">
-            > ชอบกินอาหารอะไรหรอ?
-        </h3>
-        <h3 id="mywork" class="myquestion" style="cursor: pointer; display: none; color: green;"
-            onclick="answer('mywork')">
+        <h3 id="mywork" class="myquestion" style="cursor: pointer; color: green;" onclick="answer('mywork')">
             > งานของฉัน
+        </h3>
+        <h3 id="credits" class="myquestion" style="cursor: pointer; color:black" onclick="answer('credits')">
+            > เครดิต
         </h3>
         <h3 id="descMySelf_q_1" class="myquestion" style="cursor: pointer; display: none;"
             onclick="answer('descMySelf_q_1')">
@@ -151,18 +197,63 @@
     </div>
     <script>
         (() => {
+            const manager = new THREE.LoadingManager();
+            const progressBar = document.getElementById("progress");
+            const loadingScreen = document.getElementById("loading-screen");
+            // อัปเดต progress bar
+            manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+                const progress = (itemsLoaded / itemsTotal) * 100;
+                progressBar.style.width = `${progress}%`;
+            };
+
+            // เมื่อโหลดครบทั้งหมด
+            manager.onLoad = () => {
+                loadingScreen.style.transition = "opacity 0.8s ease";
+                loadingScreen.style.opacity = "0";
+                setTimeout(() => { loadingScreen.remove(); fadeInModel(myInfo, 1000); fadeInModel(myPic,1000) }, 800);
+            };
+
+            // ใช้ Loader ทุกตัวผ่าน manager
+            const loaderBase = new THREE.GLTFLoader(manager);
+            const loaderInfo = new THREE.GLTFLoader(manager);
+            const loaderTheman = new THREE.GLTFLoader(manager);
+            const loaderNextPBR = new THREE.GLTFLoader(manager);
+            const loaderBackPBR = new THREE.GLTFLoader(manager);
+            const loaderNextCel = new THREE.GLTFLoader(manager);
+            const loaderBackCel = new THREE.GLTFLoader(manager);
+            const loaderTable1 = new THREE.GLTFLoader(manager);
+            const loaderTable2 = new THREE.GLTFLoader(manager);
+            const loaderTable3 = new THREE.GLTFLoader(manager);
+            const loaderPBRTitle = new THREE.GLTFLoader(manager);
+            const loaderCelTitle = new THREE.GLTFLoader(manager);
+            const loaderVertexTitle = new THREE.GLTFLoader(manager);
+            const loaderBackVertex = new THREE.GLTFLoader(manager);
             // GLTF model
-            const loaderBase = new THREE.GLTFLoader();
+            // const loaderBase = new THREE.GLTFLoader();
             loaderBase.load(
                 "https://krttphs.github.io/Portfolio/base.glb",
                 gltf => {
                     const model = gltf.scene;
                     model.position.set(0, 0, 0);
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            node.castShadow = false;      // ให้ส่งเงาได้
+                            node.receiveShadow = true;   // ให้รับเงาได้
+                            // ถ้า material ไม่ตอบสนองแสง ให้เปลี่ยนเป็น MeshStandardMaterial
+                            if (!(node.material instanceof THREE.MeshStandardMaterial)) {
+                                node.material = new THREE.MeshStandardMaterial({
+                                    map: node.material.map || null,
+                                    roughness: 0.5,
+                                    metalness: 0
+                                });
+                            }
+                        }
+                    });
                     scene.add(model);
                 }
             );
             let myInfo;
-            const loaderInfo = new THREE.GLTFLoader();
+            // const loaderInfo = new THREE.GLTFLoader();
             loaderInfo.load(
                 "https://krttphs.github.io/Portfolio/theman/myinfo.glb",
                 gltf => {
@@ -171,6 +262,23 @@
 
                     gltf.scene.traverse(node => {
                         if (node.isMesh) {
+                            const mat = node.material
+                            if (!(mat instanceof THREE.MeshStandardMaterial)) {
+                                node.material = new THREE.MeshStandardMaterial({
+                                    map: mat.map || null,
+                                    color: mat.color || 0xffffff,
+                                    roughness: 0.5,
+                                    metalness: 0,
+                                    transparent: true,
+                                    opacity: 0
+                                });
+                            } else {
+                                // ถ้าเป็น MeshStandardMaterial อยู่แล้ว ปรับเฉพาะ property
+                                mat.roughness = 0.5;
+                                mat.metalness = 0;
+                            }
+                            node.castShadow = true;
+                            node.receiveShadow = true;
                             node.material.transparent = true;
                             node.material.opacity = 0;
                         }
@@ -178,10 +286,25 @@
                     scene.add(myInfo);
                 }
             );
+            let myPic;
+            const img = new Image();
+            img.src = 'https://krttphs.github.io/Portfolio/theman/kritpic.jpg';
+            img.onload = () => {
+                const aspect = img.height / img.width;
+                const geometry = new THREE.PlaneGeometry(1, 1 * aspect);
+                const texture = new THREE.TextureLoader().load(img.src);
+                const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, roughness: 0.5, metalness: 0,transparent: true, opacity: 0 });
+                const plane = new THREE.Mesh(geometry, material);
+                plane.rotation.y = Math.PI / 2
+                plane.position.set(4.8, 1, -0.8);
+                myPic = plane
+                scene.add(plane);
+            };
+
             const clock = new THREE.Clock();
             let mixer;
             let theMan;
-            const loaderTheman = new THREE.GLTFLoader();
+            // const loaderTheman = new THREE.GLTFLoader();
             loaderTheman.load(
                 "https://krttphs.github.io/Portfolio/theman/the_man_sitting.glb",
                 gltf => {
@@ -208,6 +331,170 @@
                 }
 
             );
+            let nextBtnPBR;
+            loaderNextPBR.load("https://krttphs.github.io/Portfolio/theman/next.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.name = "nextBtnPBR";
+                    model.position.set(1.7, 0.2, 2)
+                    model.scale.set(0.2, 0.2, 0.2);
+                    scene.add(model)
+                    nextBtnPBR = model
+
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            node.userData.parentType = "nextBtnPBR";
+                            node.lookAt(new THREE.Vector3(1, 0.7, 1));
+                            node.rotation.x = Math.PI / 2;
+                            node.material.transparent = true;
+                            node.material.opacity = 0;
+                        }
+                    });
+                }
+            )
+            let backBtnPBR;
+            loaderBackPBR.load("https://krttphs.github.io/Portfolio/theman/back.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.name = "backBtnPBR";
+                    model.position.set(2.7, 0.2, 2)
+                    model.scale.set(0.2, 0.1, 0.2);
+                    scene.add(model)
+                    backBtnPBR = model
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            node.userData.parentType = "backBtnPBR";
+                            node.lookAt(new THREE.Vector3(3, 0.7, 1));
+                            node.rotation.x = Math.PI / 2;
+                            node.material.transparent = true;
+                            node.material.opacity = 0;
+                        }
+                    });
+                }
+            )
+            let nextBtnCel;
+            loaderNextCel.load("https://krttphs.github.io/Portfolio/theman/next.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.name = "nextBtnCel";
+                    model.position.set(-0.3, 0.2, 2)
+                    model.scale.set(0.2, 0.2, 0.2);
+                    scene.add(model)
+                    nextBtnCel = model
+
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            node.userData.parentType = "nextBtnCel";
+                            const dir = new THREE.Vector3();
+                            dir.subVectors(new THREE.Vector3(0, 0.5, 1), node.getWorldPosition(new THREE.Vector3()));
+                            dir.y = 0;
+                            node.lookAt(node.position.clone().add(dir));
+                            node.rotation.x = Math.PI / 2;
+                            node.material.transparent = true;
+                            node.material.opacity = 0;
+                        }
+                    });
+                }
+            )
+            let backBtnCel;
+            loaderBackCel.load("https://krttphs.github.io/Portfolio/theman/back.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.name = "backBtnCel";
+                    model.position.set(0.6, 0.2, 2)
+                    model.scale.set(0.2, 0.1, 0.2);
+                    scene.add(model)
+                    backBtnCel = model
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            node.userData.parentType = "backBtnCel";
+                            const dir = new THREE.Vector3();
+                            dir.subVectors(new THREE.Vector3(0, 0.5, 1), node.getWorldPosition(new THREE.Vector3()));
+                            dir.y = 0;
+                            node.lookAt(node.position.clone().add(dir));
+                            node.rotation.x = Math.PI / 2;
+                            node.material.transparent = true;
+                            node.material.opacity = 0;
+                        }
+                    });
+                }
+            )
+            let backBtnVertex;
+            loaderBackVertex.load("https://krttphs.github.io/Portfolio/theman/back.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.name = "backBtnCel";
+                    model.position.set(-1.3, 0.2, 2)
+                    model.scale.set(0.2, 0.1, 0.2);
+                    scene.add(model)
+                    backBtnVertex = model
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            node.userData.parentType = "backBtnVertex";
+                            const dir = new THREE.Vector3();
+                            dir.subVectors(new THREE.Vector3(-3, 1, 1), node.getWorldPosition(new THREE.Vector3()));
+                            dir.y = 0;
+                            node.lookAt(node.position.clone().add(dir));
+                            node.rotation.x = Math.PI / 2;
+                            node.material.transparent = true;
+                            node.material.opacity = 0;
+                        }
+                    });
+                }
+            )
+            loaderTable1.load("https://krttphs.github.io/Portfolio/theman/table.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.position.set(2, 0.1, 2)
+                    model.scale.set(0.2, 0.1, 0.2);
+                    scene.add(model)
+                }
+            )
+            loaderPBRTitle.load("https://krttphs.github.io/Portfolio/theman/PBRTitle.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.position.set(2.13, 0.1, 1.79)
+                    model.scale.set(0.05, 0.05, 0.05);
+                    model.rotation.x = Math.PI / 2;
+                    scene.add(model)
+                }
+            )
+            loaderTable2.load("https://krttphs.github.io/Portfolio/theman/table.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.position.set(0, 0.1, 2)
+                    model.scale.set(0.2, 0.1, 0.2);
+                    scene.add(model)
+                }
+            )
+            loaderCelTitle.load("https://krttphs.github.io/Portfolio/theman/CelTitle.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.position.set(0.12, 0.1, 1.79)
+                    model.scale.set(0.05, 0.05, 0.05);
+                    model.rotation.x = Math.PI / 2;
+                    model.rotation.z = Math.PI;
+                    scene.add(model)
+                }
+            )
+            loaderTable3.load("https://krttphs.github.io/Portfolio/theman/table.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.position.set(-2, 0.1, 2)
+                    model.scale.set(0.2, 0.1, 0.2);
+                    scene.add(model)
+                }
+            )
+            loaderVertexTitle.load("https://krttphs.github.io/Portfolio/theman/VertexTitle.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.position.set(-1.86, 0.1, 1.79)
+                    model.scale.set(0.05, 0.05, 0.05);
+                    model.rotation.x = Math.PI / 2;
+                    model.rotation.z = Math.PI;
+                    scene.add(model)
+                }
+            )
             // --- Scene / Camera / Renderer ---
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 100);
@@ -219,6 +506,7 @@
             renderer.outputEncoding = THREE.sRGBEncoding;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
             renderer.toneMappingExposure = 1.0;
+            renderer.shadowMap.enabled = true;
 
             document.body.appendChild(renderer.domElement);
 
@@ -226,26 +514,159 @@
             controls.target.set(0, 0.5, 0);
             controls.enableDamping = true;
 
+            //PBR_Shader
+            // --- เพิ่ม Sphere Material ---
+            const cubeUrls = [
+                'https://threejs.org/examples/textures/cube/Bridge2/posx.jpg',
+                'https://threejs.org/examples/textures/cube/Bridge2/negx.jpg',
+                'https://threejs.org/examples/textures/cube/Bridge2/posy.jpg',
+                'https://threejs.org/examples/textures/cube/Bridge2/negy.jpg',
+                'https://threejs.org/examples/textures/cube/Bridge2/posz.jpg',
+                'https://threejs.org/examples/textures/cube/Bridge2/negz.jpg'
+            ];
+            const envMap = new THREE.CubeTextureLoader().load(cubeUrls);
+            envMap.encoding = THREE.sRGBEncoding;
+            scene.environment = envMap; // IBL
+            const geo = new THREE.SphereBufferGeometry(0.2, 16, 16);
+            const mat = new THREE.MeshStandardMaterial({
+                color: 0x3b82f6,   // เปลี่ยนสีที่นี่
+                metalness: 0.9,
+                roughness: 0.1,
+            });
+
+            const cube = new THREE.Mesh(geo, mat);
+            cube.position.set(2, 0.5, 2)
+            scene.add(cube);
+
+            //Cel_Shader
+            const uniforms = {
+                uTime: { value: 0.0 },
+                uLightDir: { value: new THREE.Vector3(0.4, 1.0, 0.8).normalize() },
+                uTex: { value: new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/7/70/Solarsystemscope_texture_8k_mars.jpg') }
+            };
+
+            const vert = `
+                uniform float uTime;
+                varying vec3 vNormal;
+                varying vec3 vPosW;
+                varying vec2 vUv;
+                uniform sampler2D uTex;
+
+                void main(){
+                vNormal = normalize(mat3(modelMatrix) * normal);
+                vec3 pos = position;
+                vUv = uv;
+                // pos.y += sin(pos.z*3.0*3.14+uTime*5.0)*0.1;
+                vPosW   = ( modelMatrix * vec4(pos, 1.0)).xyz;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                }
+            `;
+
+            const frag = `
+                precision mediump float;
+                varying vec3 vNormal;
+                uniform vec3 uLightDir;
+                varying vec3 vPosW;
+                varying vec2 vUv;
+                uniform sampler2D uTex;
+
+                void main()
+                {
+
+                float diffuse = clamp(dot(vNormal, uLightDir), 0.0,1.0);
+                float levels = 4.0;           
+                diffuse  = floor(diffuse * levels) / levels;
+                diffuse += 0.5;
+
+                vec3 R = reflect(-uLightDir, vNormal);
+                vec3 V = normalize(cameraPosition - vPosW);
+                float specular = max( pow( dot(R,V), 8.0 ) , 0.0);
+
+                // specular = step(0.5, specular);
+                specular = smoothstep(0.4,0.6,specular);
+
+                if(diffuse <= 0.6)
+                    specular = 0.0;
+
+                vec3 base  = texture2D(uTex ,vUv).rgb;        
+                vec3 color = (base  * diffuse) + vec3(specular);
+
+                gl_FragColor = vec4(color, 1.0);
+                }
+            `;
+
+            const cel_geo = new THREE.TorusBufferGeometry(0.2, 0.1, 16, 16);
+            // const geo = new THREE.SphereBufferGeometry(1, 200, 200);
+            //const geo = new THREE.PlaneBufferGeometry(2.0, 2.0, 20, 20);
+            const cel_mat = new THREE.ShaderMaterial({
+                vertexShader: vert,
+                fragmentShader: frag,
+                uniforms,
+                //wireframe: true
+            });
+            const cel_mesh = new THREE.Mesh(cel_geo, cel_mat);
+            cel_mesh.position.set(0, 0.5, 2);
+            scene.add(cel_mesh);
+
+            //Vertex shader
+            const mapUniforms = {
+                uTime: { value: 0.0 },
+                uHeight: { value: null } // texture ที่จะโหลดมา
+            };
+            const mapVert = `
+    uniform sampler2D uHeight;
+    uniform float uTime;
+
+    varying float vH;
+
+    void main(){
+      vec3 pos = position;
+      float h = texture2D(uHeight, uv).r;
+      float offset = sin(uTime + h * 5.0) * 0.2;
+      pos.z += h * 2.0 + offset;   // ปรับค่านี้เพื่อเพิ่ม/ลดความนูน
+      vH = h;                             
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }
+  `;
+            const mapFrag = `
+    precision mediump float;
+    varying float vH;
+    void main(){
+    vec3 lowColor = vec3(0.0, 0.0, 1.0);   // น้ำเงิน
+    vec3 highColor = vec3(1.0, 0.0, 0.0);  // แดง
+    vec3 color = mix(lowColor, highColor, vH);
+    gl_FragColor = vec4(color, 1.0);
+  }
+  `;
+
+            new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/8/8b/Thailand_location_relief_map.svg', (tex) => {
+                mapUniforms.uHeight.value = tex;
+            });
+            const map_geo = new THREE.PlaneBufferGeometry(4, 5, 1000, 1000);
+            const map_mat = new THREE.ShaderMaterial({
+                vertexShader: mapVert,
+                fragmentShader: mapFrag,
+                uniforms: mapUniforms,
+                //wireframe: true, // เปิดถ้าอยากดูเส้นตาราง
+                side: THREE.DoubleSide
+            });
+            const map_mesh = new THREE.Mesh(map_geo, map_mat);
+            map_mesh.rotation.y = Math.PI
+            map_mesh.scale.set(0.1, 0.1, 0.1)
+            map_mesh.position.set(-2, 0.5, 2.1)
+            scene.add(map_mesh);
+
             // --- Ground (เส้นกริดช่วยกะระยะ) ---
             // const grid = new THREE.GridHelper(10, 10, 0x666666, 0x333333);
             // grid.position.y = -0.001;
             // scene.add(grid);
-
-            // const mainSpotLight = new THREE.SpotLight(0xffffff, 2);
-            // mainSpotLight.position.set(0, 5, 0)
-            // mainSpotLight.target.position.set(0, 0, 0);
-            // scene.add(mainSpotLight.target);
-            // scene.add(mainSpotLight);
             const dirLight = new THREE.DirectionalLight(0xffffff, 1);
             dirLight.position.set(5, 10, 5);
             scene.add(dirLight);
 
-            const ptLight = new THREE.PointLight(0xffaa00, 1, 50);
+            const ptLight = new THREE.PointLight(0xfffffff, 1, 50);
             ptLight.position.set(0, 5, 0);
             scene.add(ptLight);
-
-            //const ambient = new THREE.AmbientLight(0x404040, 0.5); 
-            //scene.add(ambient);
 
             // --- Objects (3 ชิ้น / สีต่างกัน / ไม่ต้องมีไฟเพราะใช้ MeshBasic) ---
             const clickable = [];
@@ -274,12 +695,91 @@
             // cylinder.position.x = lerp(0.0, 2.0, 0.0)
             // --- พรีเซ็ตตำแหน่งกล้องต่อวัตถุ (กำหนดง่าย ๆ) ---
             const VIEWS = {
-                Cube: { pos: new THREE.Vector3(3, 1, 0), tar: new THREE.Vector3(5, 0.5, 0) }
+                Cube: { pos: new THREE.Vector3(3, 1, 0), tar: new THREE.Vector3(5, 0.5, 0) },
+                PBR_Material: { pos: new THREE.Vector3(2, 0.5, 1), tar: new THREE.Vector3(2, 0.5, 2) },
+                nextPBR: { pos: new THREE.Vector3(0, 0.5, 1), tar: new THREE.Vector3(0, 0.5, 2) },
+                backPBR: { pos: new THREE.Vector3(3, 1, 0), tar: new THREE.Vector3(5, 0.8, 0) },
+                nextCel: { pos: new THREE.Vector3(-2, 0.5, 1), tar: new THREE.Vector3(-2, 0.5, 2) },
+                backCel: { pos: new THREE.Vector3(2, 0.5, 1), tar: new THREE.Vector3(2, 0.5, 2) },
+                backVer: { pos: new THREE.Vector3(0, 0.5, 1), tar: new THREE.Vector3(0, 0.5, 2) }
             };
-
+            const PBRDialog = document.getElementById("PBRDialog")
+            const CelShadingDialog = document.getElementById("CelShadingDialog");
+            const VertexShaderDialog = document.getElementById("VertexShaderDialog");
             // --- Raycaster + คลิกเพื่อสลับมุม ---
             const raycaster = new THREE.Raycaster();
             const pointer = new THREE.Vector2();
+
+            let isDragging = false;
+            let targetMesh = null;
+            let prevMouseX = 0, prevMouseY = 0;
+
+            // ตรวจจับคลิกลง
+            window.addEventListener('mousedown', (event) => {
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObject(cel_mesh);
+                const intersects2 = raycaster.intersectObject(map_mesh);
+
+                if (intersects.length > 0) {
+                    isDragging = true;
+                    targetMesh = cel_mesh;
+                    prevMouseX = event.clientX;
+                    prevMouseY = event.clientY;
+                }
+                else if (intersects2.length > 0) {
+                    isDragging = true;
+                    targetMesh = map_mesh;
+                    prevMouseX = event.clientX;
+                    prevMouseY = event.clientY;
+                }
+            });
+
+            // เมื่อคลิกเมาส์ลง สำหรับหมุนตัว model ที่โชว์อยู่
+            window.addEventListener('mousedown', (event) => {
+                pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+                pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(pointer, camera);
+                const intersects = raycaster.intersectObject(cel_mesh);
+                const intersects2 = raycaster.intersectObject(map_mesh);
+
+                if (intersects.length > 0) {
+                    isDragging = true;
+                    targetMesh = cel_mesh;
+                    prevMouseX = event.clientX;
+                    prevMouseY = event.clientY;
+                }
+                else if (intersects2.length > 0) {
+                    isDragging = true;
+                    targetMesh = map_mesh;
+                    prevMouseX = event.clientX;
+                    prevMouseY = event.clientY;
+                }
+            });
+
+            // เมื่อเมาส์ลาก สำหรับหมุนตัว model ที่โชว์อยู่
+            window.addEventListener('mousemove', (event) => {
+                if (!isDragging || !targetMesh) return;
+
+                const deltaX = event.clientX - prevMouseX;
+                const deltaY = event.clientY - prevMouseY;
+
+                // หมุนวัตถุตามทิศทางการลากเมาส์
+                targetMesh.rotation.y += deltaX * 0.01;
+                targetMesh.rotation.x += deltaY * -0.01;
+
+                prevMouseX = event.clientX;
+                prevMouseY = event.clientY;
+            });
+
+            // เมื่อปล่อยเมาส์ สำหรับหมุนตัว model ที่โชว์อยู่
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+                targetMesh = null;
+            });
             function setPointer(e) {
                 const r = renderer.domElement.getBoundingClientRect();
                 const x = (e.clientX ?? e.touches[0].clientX) - r.left;
@@ -288,6 +788,7 @@
                 pointer.y = -(y / r.height) * 2 + 1;
             }
             let whatGotPick = null
+            let hoveredObject = null;
             let stopControlsCamera = false;
             function onPick(e) {
                 if (stopControlsCamera) return;
@@ -296,20 +797,118 @@
 
                 const objectsToPick = [...clickable];
                 if (theMan) objectsToPick.push(theMan);
-
+                if (nextBtnPBR) objectsToPick.push(nextBtnPBR);
+                if (backBtnPBR) objectsToPick.push(backBtnPBR);
+                if (nextBtnCel) objectsToPick.push(nextBtnCel);
+                if (backBtnCel) objectsToPick.push(backBtnCel);
+                if (backBtnVertex) objectsToPick.push(backBtnVertex);
                 const hit = raycaster.intersectObjects(objectsToPick, true)[0];
                 if (!hit) return;
                 // ถ้า hit เป็น child ของ theMan ให้ใช้ root ของ theMan
                 const view = VIEWS[hit.object.name];
                 whatGotPick = hit.object.name;
+                const pickedType = hit.object.userData.parentType;
+                if (whatGotPick === "Cube" && document.getElementById("welcome").textContent == "กดที่กล่อง") {
+                    document.getElementById("welcome").textContent = "เยี่ยม!"
+                    setTimeout(() => {
+                        requestAnimationFrame(() => {
+                            document.getElementById("welcome").classList.add("slideOut")
+                        })
+                    }, 1000);
+                }
+                if (pickedType === "nextBtnPBR") {
+                    PBRDialog.style.display = "none"
+                    CelShadingDialog.style.display = "flex"
+                    CelShadingDialog.classList.remove("slideInDialog")
+                    requestAnimationFrame(() => {
+                        CelShadingDialog.classList.add("slideInDialog")
+                    })
+                    cameraPosition = VIEWS.nextPBR.pos.clone();
+                    pickObjPosition = VIEWS.nextPBR.tar.clone();
+                }
+                else if (pickedType === "backBtnPBR") {
+                    PBRDialog.style.display = "none"
+                    fadeOutModel(nextBtnPBR, 500)
+                    fadeOutModel(backBtnPBR, 500)
+                    fadeOutModel(nextBtnCel, 500)
+                    fadeOutModel(backBtnCel, 500)
+                    fadeOutModel(backBtnVertex, 500)
+                    cameraPosition = VIEWS.backPBR.pos.clone();
+                    pickObjPosition = VIEWS.backPBR.tar.clone();
+                    controls.enabled = "true"
+                }
+                else if (pickedType === "nextBtnCel") {
+                    CelShadingDialog.style.display = "none"
+                    VertexShaderDialog.style.display = "flex"
+                    VertexShaderDialog.classList.remove("slideInDialog")
+                    requestAnimationFrame(() => {
+                        VertexShaderDialog.classList.add("slideInDialog")
+                    })
+                    cameraPosition = VIEWS.nextCel.pos.clone();
+                    pickObjPosition = VIEWS.nextCel.tar.clone();
+                }
+                else if (pickedType === "backBtnCel") {
+                    CelShadingDialog.style.display = "none"
+                    PBRDialog.style.display = "flex"
+                    PBRDialog.classList.remove("slideInDialog")
+                    requestAnimationFrame(() => {
+                        PBRDialog.classList.add("slideInDialog")
+                    })
+                    cameraPosition = VIEWS.backCel.pos.clone();
+                    pickObjPosition = VIEWS.backCel.tar.clone();
+                }
+                else if (pickedType === "backBtnVertex") {
+                    VertexShaderDialog.style.display = "none"
+                    CelShadingDialog.style.display = "flex"
+                    CelShadingDialog.classList.remove("slideInDialog")
+                    requestAnimationFrame(() => {
+                        CelShadingDialog.classList.add("slideInDialog")
+                    })
+                    cameraPosition = VIEWS.backVer.pos.clone();
+                    pickObjPosition = VIEWS.backVer.tar.clone();
+                }
                 cameraPosition = view.pos.clone();
                 pickObjPosition = view.tar.clone();
                 if (!view) return;
                 showDialog()
                 controls.update();
             }
+            function onHover(e) {
+                setPointer(e);
+                raycaster.setFromCamera(pointer, camera);
+
+                const objectsToCheck = [];
+                if (theMan) objectsToCheck.push(theMan);
+                if (nextBtnPBR) objectsToCheck.push(nextBtnPBR);
+                if (backBtnPBR) objectsToCheck.push(backBtnPBR);
+                if (nextBtnCel) objectsToCheck.push(nextBtnCel);
+                if (backBtnCel) objectsToCheck.push(backBtnCel);
+                if (backBtnVertex) objectsToCheck.push(backBtnVertex);
+                const hit = raycaster.intersectObjects(objectsToCheck, true)[0];
+
+                if (hit) {
+                    const mesh = hit.object;
+                    if (hoveredObject !== mesh) {
+                        // คืนสีเดิมถ้ามี object เดิม
+                        if (hoveredObject) {
+                            hoveredObject.material.emissive?.setHex(hoveredObject.currentHex);
+                        }
+                        // บันทึก object ใหม่
+                        hoveredObject = mesh;
+                        hoveredObject.currentHex = hoveredObject.material.emissive?.getHex() ?? 0x000000;
+                        hoveredObject.material.emissive?.setHex(0xffff00); // สีเหลือง highlight
+                    }
+                } else {
+                    // ออกจากการ hover
+                    if (hoveredObject) {
+                        hoveredObject.material.emissive?.setHex(hoveredObject.currentHex);
+                        hoveredObject = null;
+                    }
+                }
+            }
 
             renderer.domElement.addEventListener('click', onPick);
+            renderer.domElement.addEventListener('mousemove', onHover);
             renderer.domElement.addEventListener('touchend', (e) => { onPick(e); }, { passive: true });
 
             // --- Resize ---
@@ -322,8 +921,6 @@
             function lerp(a, b, t) {
                 return a + (b - a) * t;   // t ใน [0..1]
             }
-            const sphereDialog = document.getElementById("sphereDialog")
-            const boxDialog = document.getElementById("boxDialog")
             const theManDialog = document.getElementById('theManDialog')
             let t = null
             let cylinderTarget = new THREE.Vector3();
@@ -333,32 +930,44 @@
                 if (startCamera) {
                     const welcome = document.getElementById("welcome")
                     if (camera.position.distanceTo(new THREE.Vector3(-3, 2, 0)) < 0.05) {
-                        welcome.classList.add("slideIn")
+                        welcome.classList.add("slideIn");
+                        // fadeInModel(myInfo, 1000);
                     }
 
                     cameraPosition = new THREE.Vector3(3, 1, 0);
                     pickObjPosition = new THREE.Vector3(5, 0.5, 0);
                     controls.target.set(5, 0.8, 0);
-                    controls.target.lerp(pickObjPosition, 0.005)
-                    camera.position.lerp(cameraPosition, 0.005)
+                    controls.target.lerp(pickObjPosition, 0.005) //0.005
+                    camera.position.lerp(cameraPosition, 0.005) //0.005
                     if (camera.position.distanceTo(new THREE.Vector3(3, 1, 0)) < 0.05) {
-                        startCamera = false
-                        welcome.classList.remove("slideIn")
-                        requestAnimationFrame(() => {
-                            welcome.classList.add("slideOut")
-                        })
+                        startCamera = false;
+                        welcome.style.color = "gold"
+                        welcome.textContent = "กดที่กล่อง"
+                        welcome.classList.remove("slideIn");
+                        fadeOutModel(myPic,1000);
+                        fadeOutModel(myInfo, 1000);
                     }
                 }
                 else if (!stopControlsCamera) {
                     controls.target.lerp(pickObjPosition, 0.01)
                     camera.position.lerp(cameraPosition, 0.01)
                 }
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.015;
+                uniforms.uTime.value = performance.now() / 1000; // ปรับความเร็วได้ด้วยการคูณ factor
+                uniforms.uLightDir.value.set(
+                    Math.sin(uniforms.uTime.value),
+                    1.0,
+                    0.8
+                ).normalize()
+                mapUniforms.uTime.value += 0.05;
                 TWEEN.update();
                 controls.update();
                 renderer.render(scene, camera);
                 requestAnimationFrame(loop);
             }
             loop();
+
             function animate() {
                 requestAnimationFrame(animate);
 
@@ -369,20 +978,28 @@
             }
             animate();
             document.addEventListener("keydown", (e) => {
-                const status = document.getElementById("status")
+                // const status = document.getElementById("status")
                 console.log("Key pressed:", e.code);
                 if (e.code === "Space") {
                     stopControlsCamera = !stopControlsCamera;
-                    if (!stopControlsCamera) {
-                        status.textContent = "Lock: on"
-                    } else {
-                        status.textContent = "Lock: off"
-                    }
+                    // if (!stopControlsCamera) {
+                    //     status.textContent = "Lock: on"
+                    // } else {
+                    //     status.textContent = "Lock: off"
+                    // }
                 }
                 else if (e.code === "Escape") {
-                    sphereDialog.style.display = "none"
-                    boxDialog.style.display = "none"
                     theManDialog.style.display = "none"
+                    PBRDialog.style.display = "none"
+                    CelShadingDialog.style.display = "none"
+                    VertexShaderDialog.style.display = "none"
+                    controls.enabled = true;
+                    // ptLight.visible = true;
+                    fadeOutModel(nextBtnPBR, 500)
+                    fadeOutModel(backBtnPBR, 500)
+                    fadeOutModel(nextBtnCel, 500)
+                    fadeOutModel(backBtnCel, 500)
+                    fadeOutModel(backBtnVertex, 500)
                     if (stopControlsCamera) {
                         camera.position.set(3, 1, 0)
                     }
@@ -392,25 +1009,9 @@
                 }
             })
             function showDialog() {
-                sphereDialog.style.display = "none"
-                sphereDialog.classList.remove("slideInDialog")
-                boxDialog.style.display = "none"
-                boxDialog.classList.remove("fadeInOut")
                 theManDialog.style.display = "none"
                 theManDialog.classList.remove("slideInDialog")
-                if (whatGotPick == "Sphere") {
-                    sphereDialog.style.display = "flex"
-                    requestAnimationFrame(() => {
-                        sphereDialog.classList.add("slideInDialog")
-                    })
-                }
-                else if (whatGotPick == "Box") {
-                    boxDialog.style.display = "flex"
-                    requestAnimationFrame(() => {
-                        boxDialog.classList.add("fadeInOut")
-                    })
-                }
-                else if (whatGotPick.toLowerCase().includes('cube')) {
+                if (whatGotPick.toLowerCase().includes('cube')) {
                     theManDialog.style.display = "flex"
                     requestAnimationFrame(() => {
                         theManDialog.classList.add("slideInDialog")
@@ -423,7 +1024,7 @@
                 const ansQuestion = document.getElementById("ansQuestion")
                 const myname = document.getElementById("myname")
                 const myage = document.getElementById("myage")
-                const myfood = document.getElementById("myfood")
+                const credits = document.getElementById("credits")
                 const descMySelf = document.getElementById("descMySelf")
                 const mywork = document.getElementById("mywork")
                 const descMySelf_q_1 = document.getElementById("descMySelf_q_1")
@@ -462,11 +1063,11 @@
                     timeOut = setTimeout(() => {
                         descMySelf.style.display = "flex"
                         myage.style.display = "flex"
-                        myfood.style.display = "flex"
+                        credits.style.display = "flex"
                         mywork.style.display = "flex"
                         descMySelf.classList.add("slideInDialog")
                         myage.classList.add("slideInDialog")
-                        myfood.classList.add("slideInDialog")
+                        credits.classList.add("slideInDialog")
                         mywork.classList.add("slideInDialog")
                         timeOut = null
                     }, 5500)
@@ -474,7 +1075,7 @@
                 else if (question === "myage") {
                     descMySelf.classList.remove("slideInDialog")
                     myage.classList.remove("slideInDialog")
-                    myfood.classList.remove("slideInDialog")
+                    credits.classList.remove("slideInDialog")
                     mywork.classList.remove("slideInDialog")
                     requestAnimationFrame(() => {
                         myage.classList.add("slideOut")
@@ -482,7 +1083,7 @@
                     setTimeout(() => {
                         ansQuestion.textContent = "."
                         descMySelf.style.display = "none"
-                        myfood.style.display = "none"
+                        credits.style.display = "none"
                         myage.style.display = "none"
                         mywork.style.display = "none"
                     }, 500)
@@ -493,7 +1094,7 @@
                         ansQuestion.textContent = "..."
                     }, 1500)
                     setTimeout(() => {
-                        ansQuestion.textContent = "21 ครับคิดว่า"
+                        ansQuestion.textContent = "21 ครับผม"
                     }, 2000)
                     setTimeout(() => {
                         ansQuestion.textContent = "."
@@ -512,33 +1113,33 @@
                         myage.classList.remove("slideOut")
                         descMySelf.style.display = "flex"
                         myage.style.display = "flex"
-                        myfood.style.display = "flex"
+                        credits.style.display = "flex"
                         mywork.style.display = "flex"
                         requestAnimationFrame(() => {
                             myage.classList.add("slideInDialog")
                         })
                         mywork.classList.add("slideInDialog")
                         descMySelf.classList.add("slideInDialog")
-                        myfood.classList.add("slideInDialog")
+                        credits.classList.add("slideInDialog")
                         timeOut = null
                     }, 5500)
                 }
                 else if (question === "descMySelf") {
                     descMySelf.classList.remove("slideInDialog")
                     myage.classList.remove("slideInDialog")
-                    myfood.classList.remove("slideInDialog")
+                    credits.classList.remove("slideInDialog")
                     mywork.classList.remove("slideInDialog")
                     requestAnimationFrame(() => {
                         descMySelf.classList.add("slideOut")
                     })
-                    
-                    setTimeout(()=>{
+
+                    setTimeout(() => {
                         descMySelf.style.display = "none"
-                        myfood.style.display = "none"
+                        credits.style.display = "none"
                         myage.style.display = "none"
                         mywork.style.display = "none"
                         ansQuestion.textContent = "."
-                    },500)
+                    }, 500)
                     setTimeout(() => {
                         ansQuestion.textContent = ".."
                     }, 1000)
@@ -552,12 +1153,12 @@
                         ansQuestion.textContent = ""
                         pickObjPosition = new THREE.Vector3(5, 1, 0);
                         controls.target.lerp(pickObjPosition, 0.005)
-                        fadeInModel(myInfo,1000);
+                        fadeInModel(myInfo, 1000);
+                        fadeInModel(myPic, 1000);
                     }, 2500)
                     setTimeout(() => {
                         pickObjPosition = new THREE.Vector3(5, 0.5, 0);
                         controls.target.lerp(pickObjPosition, 0.005)
-                        fadeOutModel(myInfo,1000);
                     }, 7000)
                     setTimeout(() => {
                         ansQuestion.textContent = "."
@@ -571,45 +1172,67 @@
                     setTimeout(() => {
                         ansQuestion.textContent = "เป็นไงบ้าง?"
                     }, 9500)
-                    timeOut = setTimeout(()=>{
+                    timeOut = setTimeout(() => {
                         descMySelf.classList.remove("slideOut")
                         descMySelf_q_1.style.display = "flex"
                         descMySelf_q_1.classList.add("slideInDialog")
                         timeOut = null
-                    },10000)
+                    }, 10000)
                 }
-                else if(question === "descMySelf_q_1"){
-                    requestAnimationFrame(()=>{
+                else if (question === "descMySelf_q_1") {
+                    requestAnimationFrame(() => {
                         descMySelf_q_1.classList.add("slideOut")
                     })
-                    setTimeout(()=>{
+                    setTimeout(() => {
                         ansQuestion.textContent = "."
                         descMySelf_q_1.style.display = "none"
-                    },500)
-                    setTimeout(()=>{
+                    }, 500)
+                    setTimeout(() => {
                         ansQuestion.textContent = ".."
-                    },1000)
-                    setTimeout(()=>{
+                    }, 1000)
+                    setTimeout(() => {
                         ansQuestion.textContent = "..."
-                    },1500)
-                    setTimeout(()=>{
+                    }, 1500)
+                    setTimeout(() => {
                         ansQuestion.textContent = "อยู่แล้ว อิอิ"
-                    },2000)
-                    setTimeout(()=>{
+                    }, 2000)
+                    setTimeout(() => {
                         ansQuestion.textContent = "มีอะไรอยากจะถามอีกมั้ยนะ?"
-                    },3000)
-                    timeOut = setTimeout(()=>{
+                    }, 3000)
+                    timeOut = setTimeout(() => {
                         descMySelf.style.display = "flex"
                         myage.style.display = "flex"
-                        myfood.style.display = "flex"
+                        credits.style.display = "flex"
                         mywork.style.display = "flex"
 
                         descMySelf.classList.add("slideInDialog")
                         myage.classList.add("slideInDialog")
                         mywork.classList.add("slideInDialog")
-                        myfood.classList.add("slideInDialog")
+                        credits.classList.add("slideInDialog")
                         timeOut = null
-                    },3500)
+                    }, 3500)
+                }
+                else if (question == "mywork") {
+                    controls.enabled = false;
+                    theManDialog.style.display = "none"
+                    PBRDialog.classList.remove("slideInDialog")
+                    setTimeout(() => {
+                        PBRDialog.style.display = "flex"
+                        requestAnimationFrame(() => {
+                            PBRDialog.classList.add("slideInDialog")
+                        })
+                    }, 2000);
+                    // ptLight.visible = false;
+                    const view = VIEWS["PBR_Material"];
+                    if (view) {
+                        cameraPosition.copy(view.pos);
+                        pickObjPosition.copy(view.tar);
+                    }
+                    fadeInModel(nextBtnPBR, 2000);
+                    fadeInModel(backBtnPBR, 2000);
+                    fadeInModel(nextBtnCel, 2000);
+                    fadeInModel(backBtnCel, 2000);
+                    fadeInModel(backBtnVertex, 2000);
                 }
             }
             function fadeInModel(model, duration = 1000) {
