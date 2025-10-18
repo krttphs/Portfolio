@@ -1452,7 +1452,10 @@
                     timeOut = setTimeout(() => {
                         descMySelf.classList.remove("slideOut")
                         descMySelf_q_1.style.display = "flex"
-                        descMySelf_q_1.classList.add("slideInDialog")
+                        descMySelf_q_1.classList.remove("slideInDialog")
+                        requestAnimationFrame(()=>{
+                            descMySelf_q_1.classList.add("slideInDialog")
+                        })
                         timeOut = null
                     }, 10000)
                 }
@@ -1477,6 +1480,7 @@
                         ansQuestion.textContent = "มีอะไรอยากจะถามอีกมั้ยนะ?"
                     }, 3000)
                     timeOut = setTimeout(() => {
+                        descMySelf_q_1.classList.remove("slideOut")
                         descMySelf.style.display = "flex"
                         myage.style.display = "flex"
                         credits.style.display = "flex"
