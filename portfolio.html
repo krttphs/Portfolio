@@ -962,10 +962,10 @@
 
             // ตรวจจับคลิกลง
             window.addEventListener('mousedown', (event) => {
-                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+                pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-                raycaster.setFromCamera(mouse, camera);
+                raycaster.setFromCamera(pointer, camera);
                 const intersects = raycaster.intersectObject(dice_mesh);
                 const intersects2 = raycaster.intersectObject(map_mesh);
 
@@ -1250,7 +1250,6 @@
                 requestAnimationFrame(loop);
             }
             loop();
-            animate();
             document.addEventListener("keydown", (e) => {
                 // const status = document.getElementById("status")
                 console.log("Key pressed:", e.code);
@@ -1490,7 +1489,7 @@
                         timeOut = null
                     }, 3500)
                 }
-                else if (question == "mywork") {
+                else if (question === "mywork") {
                     controls.enabled = false;
                     theManDialog.style.display = "none"
                     PBRDialog.classList.remove("slideInDialog")
@@ -1515,7 +1514,7 @@
                     fadeInModel(backBtnCel, 2000);
                     fadeInModel(backBtnVertex, 2000);
                 }
-                else if (question == "credits") {
+                else if (question === "credits") {
                     controls.enabled = false;
                     theManDialog.style.display = "none"
                     setTimeout(() => {
