@@ -146,7 +146,7 @@
     <div id="PBRDialog"
         style="position: absolute; color: white; left: 5%; top: 10%; display: none; flex-direction: column;">
         <h3>
-            PBR (Physically Based Rendering) คือการเรนเดอร์ให้วัตถุดูสมจริงโดยจำลองการสะท้อนแสงตามคุณสมบัติของวัสดุ
+            <span style="color: red">PBR</span> (<span style="font-style: italic;">Physically Based Rendering</span>) คือการเรนเดอร์ให้วัตถุดูสมจริงโดยจำลองการสะท้อนแสงตามคุณสมบัติของวัสดุ
         </h3>
         <h3>
             เช่น Albedo สีพื้นฐาน, Metallic ระบุโลหะ, Roughness ความเรียบ/หยาบ, และใช้ Normal Map กับ Ambient Occlusion
@@ -156,7 +156,7 @@
     <div id="CelShadingDialog"
         style="position: absolute; color: white; left: 5%; top: 10%; display: none; flex-direction: column;">
         <h3>
-            Cel Shading คือเทคนิคเรนเดอร์สไตล์การ์ตูน ให้วัตถุดูเหมือนถูกวาดด้วยเส้นและสีเรียบ
+            <span style="color: green">Cel Shading</span> คือเทคนิคเรนเดอร์สไตล์การ์ตูน ให้วัตถุดูเหมือนถูกวาดด้วยเส้นและสีเรียบ
             ใช้การแบ่งโทนสีและขอบเขตเงาชัดเจน แทนการไล่สีเรียบเหมือนโลกจริง
         </h3>
         <h3>
@@ -166,7 +166,7 @@
     <div id="VertexShaderDialog"
         style="position: absolute; color: white; left: 5%; top: 10%; display: none; flex-direction: column;">
         <h3>
-            Vertex Shader คือโปรแกรมที่รันบน GPU เพื่อปรับตำแหน่งและคุณสมบัติของแต่ละจุด (vertex) ของโมเดล 3D
+            <span style="color: blue">Vertex Shader</span> คือโปรแกรมที่รันบน GPU เพื่อปรับตำแหน่งและคุณสมบัติของแต่ละจุด (<span style="font-style: italic;">vertex</span>) ของโมเดล <span style="font-weight: bold;">3D</span>
         </h3>
         <h3>
             ใช้คำนวณการเคลื่อนที่ หมุน ขยาย หรือบิดเบือนวัตถุ และสามารถส่งข้อมูลให้ Pixel Shader เพื่อเรนเดอร์สีและแสง
@@ -210,7 +210,7 @@
             manager.onLoad = () => {
                 loadingScreen.style.transition = "opacity 0.8s ease";
                 loadingScreen.style.opacity = "0";
-                setTimeout(() => { loadingScreen.remove(); fadeInModel(myInfo, 1000); fadeInModel(myPic,1000) }, 800);
+                setTimeout(() => { loadingScreen.remove(); fadeInModel(myInfo, 1000); fadeInModel(myPic, 1000) }, 800);
             };
 
             // ใช้ Loader ทุกตัวผ่าน manager
@@ -293,7 +293,7 @@
                 const aspect = img.height / img.width;
                 const geometry = new THREE.PlaneGeometry(1, 1 * aspect);
                 const texture = new THREE.TextureLoader().load(img.src);
-                const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, roughness: 0.5, metalness: 0,transparent: true, opacity: 0 });
+                const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, roughness: 0.5, metalness: 0, transparent: true, opacity: 0 });
                 const plane = new THREE.Mesh(geometry, material);
                 plane.rotation.y = Math.PI / 2
                 plane.position.set(4.8, 1, -0.8);
@@ -442,12 +442,34 @@
                     });
                 }
             )
+            let spotLight1;
             loaderTable1.load("https://krttphs.github.io/Portfolio/theman/table.glb",
                 gltf => {
                     const model = gltf.scene;
                     model.position.set(2, 0.1, 2)
                     model.scale.set(0.2, 0.1, 0.2);
                     scene.add(model)
+                    // สร้าง SpotLight ให้ส่องจากด้านหน้าโต๊ะ (z - 2)
+                    const spotLight = new THREE.SpotLight(0xffffff, 5);
+                    spotLight.position.set(model.position.x, model.position.y + 0.3, model.position.z - 2);
+
+                    // สร้าง target แยก เพื่อให้ไฟส่องไปที่โต๊ะ
+                    const targetObject = new THREE.Object3D();
+                    targetObject.position.copy(model.position);
+                    scene.add(targetObject);
+
+                    // ตั้ง target ให้ไฟส่องไปที่จุดนั้น
+                    spotLight.target = targetObject;
+
+                    // ปรับค่าคุณสมบัติของแสง
+                    spotLight.angle = Math.PI / 8;
+                    spotLight.penumbra = 0.4;
+                    spotLight.distance = 10;
+                    spotLight.decay = 2;
+                    spotLight.visible = false
+                    spotLight1 = spotLight
+                    scene.add(spotLight);
+                    renderer.render(scene, camera);
                 }
             )
             loaderPBRTitle.load("https://krttphs.github.io/Portfolio/theman/PBRTitle.glb",
@@ -459,12 +481,34 @@
                     scene.add(model)
                 }
             )
+            let spotLight2
             loaderTable2.load("https://krttphs.github.io/Portfolio/theman/table.glb",
                 gltf => {
                     const model = gltf.scene;
                     model.position.set(0, 0.1, 2)
                     model.scale.set(0.2, 0.1, 0.2);
                     scene.add(model)
+                    // สร้าง SpotLight ให้ส่องจากด้านหน้าโต๊ะ (z - 2)
+                    const spotLight = new THREE.SpotLight(0xffffff, 5);
+                    spotLight.position.set(model.position.x, model.position.y + 0.3, model.position.z - 2);
+
+                    // สร้าง target แยก เพื่อให้ไฟส่องไปที่โต๊ะ
+                    const targetObject = new THREE.Object3D();
+                    targetObject.position.copy(model.position);
+                    scene.add(targetObject);
+
+                    // ตั้ง target ให้ไฟส่องไปที่จุดนั้น
+                    spotLight.target = targetObject;
+
+                    // ปรับค่าคุณสมบัติของแสง
+                    spotLight.angle = Math.PI / 8;
+                    spotLight.penumbra = 0.4;
+                    spotLight.distance = 10;
+                    spotLight.decay = 2;
+                    spotLight.visible = false
+                    spotLight2 = spotLight
+                    scene.add(spotLight);
+                    renderer.render(scene, camera);
                 }
             )
             loaderCelTitle.load("https://krttphs.github.io/Portfolio/theman/CelTitle.glb",
@@ -477,12 +521,34 @@
                     scene.add(model)
                 }
             )
+            let spotLight3
             loaderTable3.load("https://krttphs.github.io/Portfolio/theman/table.glb",
                 gltf => {
                     const model = gltf.scene;
                     model.position.set(-2, 0.1, 2)
                     model.scale.set(0.2, 0.1, 0.2);
                     scene.add(model)
+                    // สร้าง SpotLight ให้ส่องจากด้านหน้าโต๊ะ (z - 2)
+                    const spotLight = new THREE.SpotLight(0xffffff, 5);
+                    spotLight.position.set(model.position.x, model.position.y + 0.3, model.position.z - 2);
+
+                    // สร้าง target แยก เพื่อให้ไฟส่องไปที่โต๊ะ
+                    const targetObject = new THREE.Object3D();
+                    targetObject.position.copy(model.position);
+                    scene.add(targetObject);
+
+                    // ตั้ง target ให้ไฟส่องไปที่จุดนั้น
+                    spotLight.target = targetObject;
+
+                    // ปรับค่าคุณสมบัติของแสง
+                    spotLight.angle = Math.PI / 8;
+                    spotLight.penumbra = 0.4;
+                    spotLight.distance = 10;
+                    spotLight.decay = 2;
+                    spotLight.visible = false
+                    spotLight3 = spotLight
+                    scene.add(spotLight);
+                    renderer.render(scene, camera);
                 }
             )
             loaderVertexTitle.load("https://krttphs.github.io/Portfolio/theman/VertexTitle.glb",
@@ -660,9 +726,9 @@
             // const grid = new THREE.GridHelper(10, 10, 0x666666, 0x333333);
             // grid.position.y = -0.001;
             // scene.add(grid);
-            const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-            dirLight.position.set(5, 10, 5);
-            scene.add(dirLight);
+            // const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+            // dirLight.position.set(5, 10, 5);
+            // scene.add(dirLight);
 
             const ptLight = new THREE.PointLight(0xfffffff, 1, 50);
             ptLight.position.set(0, 5, 0);
@@ -790,7 +856,9 @@
             let whatGotPick = null
             let hoveredObject = null;
             let stopControlsCamera = false;
+            let startCamera = true;
             function onPick(e) {
+                if (startCamera) return;
                 if (stopControlsCamera) return;
                 setPointer(e);
                 raycaster.setFromCamera(pointer, camera);
@@ -825,6 +893,9 @@
                     })
                     cameraPosition = VIEWS.nextPBR.pos.clone();
                     pickObjPosition = VIEWS.nextPBR.tar.clone();
+                    setTimeout(()=>{
+                        spotLight2.visible = true
+                    },1000)
                 }
                 else if (pickedType === "backBtnPBR") {
                     PBRDialog.style.display = "none"
@@ -836,6 +907,12 @@
                     cameraPosition = VIEWS.backPBR.pos.clone();
                     pickObjPosition = VIEWS.backPBR.tar.clone();
                     controls.enabled = "true"
+                    ptLight.visible = "true"
+                    setTimeout(()=>{
+                        spotLight1.visible = false
+                        spotLight2.visible = false
+                        spotLight3.visible = false
+                    },700)
                 }
                 else if (pickedType === "nextBtnCel") {
                     CelShadingDialog.style.display = "none"
@@ -846,6 +923,9 @@
                     })
                     cameraPosition = VIEWS.nextCel.pos.clone();
                     pickObjPosition = VIEWS.nextCel.tar.clone();
+                    setTimeout(()=>{
+                        spotLight3.visible = true
+                    },1000)
                 }
                 else if (pickedType === "backBtnCel") {
                     CelShadingDialog.style.display = "none"
@@ -924,7 +1004,6 @@
             const theManDialog = document.getElementById('theManDialog')
             let t = null
             let cylinderTarget = new THREE.Vector3();
-            let startCamera = true;
             // --- Loop ---
             function loop() {
                 if (startCamera) {
@@ -944,7 +1023,7 @@
                         welcome.style.color = "gold"
                         welcome.textContent = "กดที่กล่อง"
                         welcome.classList.remove("slideIn");
-                        fadeOutModel(myPic,1000);
+                        fadeOutModel(myPic, 1000);
                         fadeOutModel(myInfo, 1000);
                     }
                 }
@@ -994,7 +1073,10 @@
                     CelShadingDialog.style.display = "none"
                     VertexShaderDialog.style.display = "none"
                     controls.enabled = true;
-                    // ptLight.visible = true;
+                    ptLight.visible = true;
+                    spotLight1.visible = false;
+                    spotLight2.visible = false;
+                    spotLight3.visible = false;
                     fadeOutModel(nextBtnPBR, 500)
                     fadeOutModel(backBtnPBR, 500)
                     fadeOutModel(nextBtnCel, 500)
@@ -1216,13 +1298,16 @@
                     controls.enabled = false;
                     theManDialog.style.display = "none"
                     PBRDialog.classList.remove("slideInDialog")
+                    setTimeout(()=>{
+                        ptLight.visible = false;
+                    },1000)
                     setTimeout(() => {
                         PBRDialog.style.display = "flex"
                         requestAnimationFrame(() => {
                             PBRDialog.classList.add("slideInDialog")
+                            spotLight1.visible = true;
                         })
                     }, 2000);
-                    // ptLight.visible = false;
                     const view = VIEWS["PBR_Material"];
                     if (view) {
                         cameraPosition.copy(view.pos);
