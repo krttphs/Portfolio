@@ -199,6 +199,15 @@
             > เท่มาก!
         </h3>
     </div>
+    <div id="creditDialog"
+        style="position: absolute; color: white; bottom: 0%; right: 43%; display: none; flex-direction: column; background-color: black; padding: 5px; border-radius: 10px; margin-bottom: 5px;">
+        <h5>
+            กดที่ <span style="font-style: italic;">ชื่อ</span> ด้านบนโมเดลเพื่อไปยังแหล่งที่มา
+        </h5>
+        <h5>
+            <span style="color: red">ESC</span> เพื่อกลับไปคุยกับผม
+        </h5>
+    </div>
     <script>
         (() => {
             const manager = new THREE.LoadingManager();
@@ -233,6 +242,11 @@
             const loaderVertexTitle = new THREE.GLTFLoader(manager);
             const loaderBackVertex = new THREE.GLTFLoader(manager);
             const loaderDice = new THREE.GLTFLoader(manager);
+            const loaderCredits = new THREE.GLTFLoader(manager);
+            const loaderThemanCredit = new THREE.GLTFLoader(manager);
+            const loaderDiceCredit = new THREE.GLTFLoader(manager);
+            const loaderBaseCredit = new THREE.GLTFLoader(manager);
+            const loaderHeightmapCredit = new THREE.GLTFLoader(manager);
             // GLTF model
             // const loaderBase = new THREE.GLTFLoader();
             loaderBase.load(
@@ -257,6 +271,90 @@
                     scene.add(model);
                 }
             );
+            loaderCredits.load(
+                "https://krttphs.github.io/Portfolio/theman/credits.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.position.set(0, 0, 0);
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            node.material.side = THREE.DoubleSide;
+                            node.castShadow = true;
+                            node.receiveShadow = true;
+                            const mat = node.material;
+                            mat.transparent = false;
+                            mat.depthWrite = true;
+                            mat.depthTest = true;
+                            mat.alphaTest = 0.5; // กันพิกเซลโปร่งใส
+                            mat.needsUpdate = true;
+                        }
+                    });
+                    scene.add(model);
+                }
+            );
+            let goToThemanCredit
+            let goToDiceCredit
+            let goToBaseCredit
+            let goToHeightmapCredit
+            
+            loaderHeightmapCredit.load("https://krttphs.github.io/Portfolio/theman/heightmapCredit.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.name = "goToHeightmapCredit";
+                    scene.add(model)
+                    goToHeightmapCredit = model
+
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            node.userData.parentType = "goToHeightmapCredit";
+                        }
+                    });
+                }
+            )
+            loaderThemanCredit.load("https://krttphs.github.io/Portfolio/theman/themanCredit.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.name = "goToThemanCredit";
+                    scene.add(model)
+                    goToThemanCredit = model
+
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            node.userData.parentType = "goToThemanCredit";
+                        }
+                    });
+                }
+            )
+            loaderDiceCredit.load("https://krttphs.github.io/Portfolio/theman/diceCredit.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.name = "goToDiceCredit";
+                    scene.add(model)
+                    goToDiceCredit = model
+
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            node.userData.parentType = "goToDiceCredit";
+                        }
+                    });
+                }
+            )
+            loaderBaseCredit.load("https://krttphs.github.io/Portfolio/theman/baseCredit.glb",
+                gltf => {
+                    const model = gltf.scene;
+                    model.name = "goToBaseCredit";
+                    scene.add(model)
+                    goToBaseCredit = model
+
+                    gltf.scene.traverse(node => {
+                        if (node.isMesh) {
+                            node.userData.parentType = "goToBaseCredit";
+                        }
+                    });
+                }
+            )
+            
+
             let dice_mesh
             loaderDice.load("https://krttphs.github.io/Portfolio/theman/dice_model.glb",
                 gltf => {
@@ -691,7 +789,7 @@
 
                 if(diffuse <= 0.6)
                     specular = 0.0;
-                    
+
                 vec3 base  = texture2D(uTex ,vUv).rgb;        
                 vec3 color = (base * diffuse) + vec3(specular);
 
@@ -774,6 +872,26 @@
             ptLight.position.set(0, 5, 0);
             scene.add(ptLight);
 
+            // สร้าง SpotLight ให้ credits
+            const spotLight = new THREE.SpotLight(0xffffff, 5);
+            spotLight.position.set(-2, 1, 0);
+
+            // สร้าง target แยก เพื่อให้ไฟส่องไปที่โต๊ะ
+            const targetObject = new THREE.Object3D();
+            targetObject.position.set(-4, 1, 0);
+            scene.add(targetObject);
+
+            // ตั้ง target ให้ไฟส่องไปที่จุดนั้น
+            spotLight.target = targetObject;
+
+            // ปรับค่าคุณสมบัติของแสง
+            spotLight.angle = Math.PI / 5;
+            spotLight.penumbra = 0.4;
+            spotLight.distance = 10;
+            spotLight.decay = 2;
+            spotLight.visible = true
+            scene.add(spotLight);
+
             // --- Objects (3 ชิ้น / สีต่างกัน / ไม่ต้องมีไฟเพราะใช้ MeshBasic) ---
             const clickable = [];
             let pickObjPosition = new THREE.Vector3();
@@ -807,7 +925,8 @@
                 backPBR: { pos: new THREE.Vector3(3, 1, 0), tar: new THREE.Vector3(5, 0.8, 0) },
                 nextCel: { pos: new THREE.Vector3(-2, 0.5, 1), tar: new THREE.Vector3(-2, 0.5, 2) },
                 backCel: { pos: new THREE.Vector3(2, 0.5, 1), tar: new THREE.Vector3(2, 0.5, 2) },
-                backVer: { pos: new THREE.Vector3(0, 0.5, 1), tar: new THREE.Vector3(0, 0.5, 2) }
+                backVer: { pos: new THREE.Vector3(0, 0.5, 1), tar: new THREE.Vector3(0, 0.5, 2) },
+                credits: { pos: new THREE.Vector3(-2.5, 1, 0), tar: new THREE.Vector3(-4, 1, 0) }
             };
             const PBRDialog = document.getElementById("PBRDialog")
             const CelShadingDialog = document.getElementById("CelShadingDialog");
@@ -910,6 +1029,10 @@
                 if (nextBtnCel) objectsToPick.push(nextBtnCel);
                 if (backBtnCel) objectsToPick.push(backBtnCel);
                 if (backBtnVertex) objectsToPick.push(backBtnVertex);
+                if (goToThemanCredit) objectsToPick.push(goToThemanCredit);
+                if (goToDiceCredit) objectsToPick.push(goToDiceCredit);
+                if (goToBaseCredit) objectsToPick.push(goToBaseCredit);
+                if (goToHeightmapCredit) objectsToPick.push(goToHeightmapCredit);
                 const hit = raycaster.intersectObjects(objectsToPick, true)[0];
                 if (!hit) return;
                 // ถ้า hit เป็น child ของ theMan ให้ใช้ root ของ theMan
@@ -987,6 +1110,18 @@
                     cameraPosition = VIEWS.backVer.pos.clone();
                     pickObjPosition = VIEWS.backVer.tar.clone();
                 }
+                else if(pickedType === "goToThemanCredit"){
+                    window.open("https://sketchfab.com/3d-models/man-sitting-d8ca320050c6494581c34292356a280b")
+                }
+                else if(pickedType === "goToDiceCredit"){
+                    window.open("https://sketchfab.com/3d-models/dice-roblox-3d-model-81c71c205ff244f9bfc85aaa31089b7c")
+                }
+                else if(pickedType === "goToBaseCredit"){
+                    window.open("https://sketchfab.com/3d-models/vr-room-light-baked-d3d10773cfb34aec975d46db538ff59e")
+                }
+                else if(pickedType === "goToHeightmapCredit"){
+                    window.open("https://upload.wikimedia.org/wikipedia/commons/8/8b/Thailand_location_relief_map.svg")
+                }
                 cameraPosition = view.pos.clone();
                 pickObjPosition = view.tar.clone();
                 if (!view) return;
@@ -996,7 +1131,7 @@
             function onHover(e) {
                 setPointer(e);
                 raycaster.setFromCamera(pointer, camera);
-
+                
                 const objectsToCheck = [];
                 if (theMan) objectsToCheck.push(theMan);
                 if (nextBtnPBR) objectsToCheck.push(nextBtnPBR);
@@ -1004,6 +1139,10 @@
                 if (nextBtnCel) objectsToCheck.push(nextBtnCel);
                 if (backBtnCel) objectsToCheck.push(backBtnCel);
                 if (backBtnVertex) objectsToCheck.push(backBtnVertex);
+                if (goToThemanCredit) objectsToCheck.push(goToThemanCredit);
+                if (goToDiceCredit) objectsToCheck.push(goToDiceCredit);
+                if (goToBaseCredit) objectsToCheck.push(goToBaseCredit);
+                if (goToHeightmapCredit) objectsToCheck.push(goToHeightmapCredit);
                 const hit = raycaster.intersectObjects(objectsToCheck, true)[0];
 
                 if (hit) {
@@ -1042,6 +1181,7 @@
                 return a + (b - a) * t;   // t ใน [0..1]
             }
             const theManDialog = document.getElementById('theManDialog')
+            const creditDialog = document.getElementById("creditDialog")
             let t = null
             let cylinderTarget = new THREE.Vector3();
             // --- Loop ---
@@ -1056,8 +1196,8 @@
                     cameraPosition = new THREE.Vector3(3, 1, 0);
                     pickObjPosition = new THREE.Vector3(5, 0.5, 0);
                     controls.target.set(5, 0.8, 0);
-                    controls.target.lerp(pickObjPosition, 1) //0.005
-                    camera.position.lerp(cameraPosition, 1) //0.005
+                    controls.target.lerp(pickObjPosition, 0.005) //0.005
+                    camera.position.lerp(cameraPosition, 0.005) //0.005
                     if (camera.position.distanceTo(new THREE.Vector3(3, 1, 0)) < 0.05) {
                         startCamera = false;
                         welcome.style.color = "gold"
@@ -1111,6 +1251,7 @@
                     PBRDialog.style.display = "none"
                     CelShadingDialog.style.display = "none"
                     VertexShaderDialog.style.display = "none"
+                    creditDialog.style.display = "none"
                     controls.enabled = true;
                     ptLight.visible = true;
                     spotLight1.visible = false;
@@ -1357,6 +1498,19 @@
                     fadeInModel(nextBtnCel, 2000);
                     fadeInModel(backBtnCel, 2000);
                     fadeInModel(backBtnVertex, 2000);
+                }
+                else if (question == "credits") {
+                    controls.enabled = false;
+                    theManDialog.style.display = "none"
+                    setTimeout(() => {
+                        ptLight.visible = false;
+                        creditDialog.style.display = "flex"
+                    }, 1000)
+                    const view = VIEWS["credits"];
+                    if (view) {
+                        cameraPosition.copy(view.pos);
+                        pickObjPosition.copy(view.tar);
+                    }
                 }
             }
             function fadeInModel(model, duration = 1000) {
