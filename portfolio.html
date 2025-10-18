@@ -134,7 +134,7 @@
         </div>
         <br>
         <div>
-            ถ้านานเกิน Refresh ใหม่นะครับ
+            ครั้งแรกอาจจะนานนิดนึงนะคับ
         </div>
     </div>
 
@@ -608,7 +608,7 @@
                     spotLight.visible = false
                     spotLight1 = spotLight
                     scene.add(spotLight);
-                    renderer.render(scene, camera);
+                    // renderer.render(scene, camera);
                 }
             )
             loaderPBRTitle.load("https://krttphs.github.io/Portfolio/theman/PBRTitle.glb",
@@ -647,7 +647,7 @@
                     spotLight.visible = false
                     spotLight2 = spotLight
                     scene.add(spotLight);
-                    renderer.render(scene, camera);
+                    // renderer.render(scene, camera);
                 }
             )
             loaderCelTitle.load("https://krttphs.github.io/Portfolio/theman/CelTitle.glb",
@@ -687,7 +687,7 @@
                     spotLight.visible = false
                     spotLight3 = spotLight
                     scene.add(spotLight);
-                    renderer.render(scene, camera);
+                    // renderer.render(scene, camera);
                 }
             )
             loaderVertexTitle.load("https://krttphs.github.io/Portfolio/theman/VertexTitle.glb",
@@ -857,7 +857,7 @@
   }
   `;
 
-            new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/8/8b/Thailand_location_relief_map.svg', (tex) => {
+            new THREE.TextureLoader().load('https://krttphs.github.io/Portfolio/thailand_heightmap.png', (tex) => {
                 mapUniforms.uHeight.value = tex;
             });
             const map_geo = new THREE.PlaneBufferGeometry(4, 5, 1000, 1000);
@@ -1235,6 +1235,10 @@
                 if (spotLight2) {
                     uniforms.uLightPos.value.copy(spotLight2.position);
                 }
+                //animation ของ the man
+                const delta = clock.getDelta();
+                if (mixer) mixer.update(delta);
+
                 uniforms.uCameraPos.value.copy(camera.position);
                 mapUniforms.uTime.value += 0.05;
                 TWEEN.update();
@@ -1243,15 +1247,6 @@
                 requestAnimationFrame(loop);
             }
             loop();
-
-            function animate() {
-                requestAnimationFrame(animate);
-
-                const delta = clock.getDelta();
-                if (mixer) mixer.update(delta);
-
-                renderer.render(scene, camera);
-            }
             animate();
             document.addEventListener("keydown", (e) => {
                 // const status = document.getElementById("status")
