@@ -183,7 +183,7 @@
             > คุณเป็นใคร?
         </h3> -->
         <h3 id="descMySelf" class="myquestion" style="cursor: pointer;" onclick="answer('descMySelf')">
-            > อธิบายเกี่ยวกับตัวคุณหน่อย
+            > ขอดูข้อมูลคุณชัดๆหน่อย
         </h3>
         <h3 id="myage" class="myquestion" style="cursor: pointer;" onclick="answer('myage')">
             > คุณอายุเท่าไหร่?
@@ -280,7 +280,7 @@
                         if (node.isMesh) {
                             node.material.side = THREE.DoubleSide;
                             node.castShadow = true;
-                            node.receiveShadow = true;
+                            node.receiveShadow = false;
                             const mat = node.material;
                             mat.transparent = false;
                             mat.depthWrite = true;
@@ -296,64 +296,73 @@
             let goToDiceCredit
             let goToBaseCredit
             let goToHeightmapCredit
-            
+
             loaderHeightmapCredit.load("https://krttphs.github.io/Portfolio/theman/heightmapCredit.glb",
                 gltf => {
                     const model = gltf.scene;
                     model.name = "goToHeightmapCredit";
-                    scene.add(model)
                     goToHeightmapCredit = model
 
                     gltf.scene.traverse(node => {
                         if (node.isMesh) {
                             node.userData.parentType = "goToHeightmapCredit";
+                            node.castShadow = true;
+                            node.receiveShadow = true;
                         }
                     });
+                    scene.add(model)
                 }
             )
             loaderThemanCredit.load("https://krttphs.github.io/Portfolio/theman/themanCredit.glb",
                 gltf => {
                     const model = gltf.scene;
                     model.name = "goToThemanCredit";
-                    scene.add(model)
                     goToThemanCredit = model
 
                     gltf.scene.traverse(node => {
                         if (node.isMesh) {
                             node.userData.parentType = "goToThemanCredit";
+                            node.castShadow = true;
+                            node.receiveShadow = true;
                         }
                     });
+                    scene.add(model)
                 }
             )
             loaderDiceCredit.load("https://krttphs.github.io/Portfolio/theman/diceCredit.glb",
                 gltf => {
                     const model = gltf.scene;
                     model.name = "goToDiceCredit";
-                    scene.add(model)
                     goToDiceCredit = model
 
                     gltf.scene.traverse(node => {
                         if (node.isMesh) {
                             node.userData.parentType = "goToDiceCredit";
+                            node.castShadow = true;
+                            node.receiveShadow = true;
                         }
                     });
+                    scene.add(model)
                 }
             )
             loaderBaseCredit.load("https://krttphs.github.io/Portfolio/theman/baseCredit.glb",
                 gltf => {
                     const model = gltf.scene;
                     model.name = "goToBaseCredit";
-                    scene.add(model)
+
                     goToBaseCredit = model
 
                     gltf.scene.traverse(node => {
                         if (node.isMesh) {
                             node.userData.parentType = "goToBaseCredit";
+                            node.castShadow = true;
+                            node.receiveShadow = true;
                         }
                     });
+                    scene.add(model)
                 }
             )
-            
+
 
             let dice_mesh
             loaderDice.load("https://krttphs.github.io/Portfolio/theman/dice_model.glb",
@@ -372,6 +381,7 @@
                                 uniforms: uniforms,
                                 transparent: node.material.transparent || false
                             });
+                            node.castShadow = true;
                         }
                     });
                     scene.add(model);
@@ -384,7 +394,6 @@
                 gltf => {
                     myInfo = gltf.scene;
                     myInfo.position.set(0, 0.2, 0);
-
                     gltf.scene.traverse(node => {
                         if (node.isMesh) {
                             const mat = node.material
@@ -403,7 +412,7 @@
                                 mat.metalness = 0;
                             }
                             node.castShadow = true;
-                            node.receiveShadow = true;
+                            node.receiveShadow = false;
                             node.material.transparent = true;
                             node.material.opacity = 0;
                         }
@@ -423,6 +432,7 @@
                 plane.rotation.y = Math.PI / 2
                 plane.position.set(4.8, 1, -0.8);
                 myPic = plane
+                plane.castShadow = true;
                 scene.add(plane);
             };
 
@@ -435,7 +445,6 @@
                 gltf => {
                     const model = gltf.scene;
                     model.position.set(4.5, 0, 0);
-                    scene.add(model);
                     theMan = model
                     // ใช้งาน animation
                     mixer = new THREE.AnimationMixer(model);
@@ -453,6 +462,7 @@
                             mat.needsUpdate = true;
                         }
                     });
+                    scene.add(model);
                 }
 
             );
@@ -463,9 +473,7 @@
                     model.name = "nextBtnPBR";
                     model.position.set(1.7, 0.2, 2)
                     model.scale.set(0.2, 0.2, 0.2);
-                    scene.add(model)
                     nextBtnPBR = model
-
                     gltf.scene.traverse(node => {
                         if (node.isMesh) {
                             node.userData.parentType = "nextBtnPBR";
@@ -474,7 +482,9 @@
                             node.material.transparent = true;
                             node.material.opacity = 0;
                         }
+                        node.castShadow = true;
                     });
+                    scene.add(model)
                 }
             )
             let backBtnPBR;
@@ -484,7 +494,6 @@
                     model.name = "backBtnPBR";
                     model.position.set(2.7, 0.2, 2)
                     model.scale.set(0.2, 0.1, 0.2);
-                    scene.add(model)
                     backBtnPBR = model
                     gltf.scene.traverse(node => {
                         if (node.isMesh) {
@@ -495,6 +504,7 @@
                             node.material.opacity = 0;
                         }
                     });
+                    scene.add(model)
                 }
             )
             let nextBtnCel;
@@ -504,7 +514,6 @@
                     model.name = "nextBtnCel";
                     model.position.set(-0.3, 0.2, 2)
                     model.scale.set(0.2, 0.2, 0.2);
-                    scene.add(model)
                     nextBtnCel = model
 
                     gltf.scene.traverse(node => {
@@ -519,6 +528,7 @@
                             node.material.opacity = 0;
                         }
                     });
+                    scene.add(model)
                 }
             )
             let backBtnCel;
@@ -528,7 +538,6 @@
                     model.name = "backBtnCel";
                     model.position.set(0.6, 0.2, 2)
                     model.scale.set(0.2, 0.1, 0.2);
-                    scene.add(model)
                     backBtnCel = model
                     gltf.scene.traverse(node => {
                         if (node.isMesh) {
@@ -542,6 +551,7 @@
                             node.material.opacity = 0;
                         }
                     });
+                    scene.add(model)
                 }
             )
             let backBtnVertex;
@@ -551,7 +561,6 @@
                     model.name = "backBtnCel";
                     model.position.set(-1.3, 0.2, 2)
                     model.scale.set(0.2, 0.1, 0.2);
-                    scene.add(model)
                     backBtnVertex = model
                     gltf.scene.traverse(node => {
                         if (node.isMesh) {
@@ -565,6 +574,7 @@
                             node.material.opacity = 0;
                         }
                     });
+                    scene.add(model)
                 }
             )
             let spotLight1;
@@ -869,11 +879,15 @@
             // scene.add(dirLight);
 
             const ptLight = new THREE.PointLight(0xfffffff, 1, 50);
-            ptLight.position.set(0, 5, 0);
+            ptLight.position.set(0, 2, 0);
+            ptLight.castShadow = true;
+            ptLight.shadow.mapSize.width = 2048;
+            ptLight.shadow.mapSize.height = 2048;
             scene.add(ptLight);
 
             // สร้าง SpotLight ให้ credits
             const spotLight = new THREE.SpotLight(0xffffff, 5);
+            spotLight.castShadow = true;
             spotLight.position.set(-2, 1, 0);
 
             // สร้าง target แยก เพื่อให้ไฟส่องไปที่โต๊ะ
@@ -1110,16 +1124,16 @@
                     cameraPosition = VIEWS.backVer.pos.clone();
                     pickObjPosition = VIEWS.backVer.tar.clone();
                 }
-                else if(pickedType === "goToThemanCredit"){
+                else if (pickedType === "goToThemanCredit") {
                     window.open("https://sketchfab.com/3d-models/man-sitting-d8ca320050c6494581c34292356a280b")
                 }
-                else if(pickedType === "goToDiceCredit"){
+                else if (pickedType === "goToDiceCredit") {
                     window.open("https://sketchfab.com/3d-models/dice-roblox-3d-model-81c71c205ff244f9bfc85aaa31089b7c")
                 }
-                else if(pickedType === "goToBaseCredit"){
+                else if (pickedType === "goToBaseCredit") {
                     window.open("https://sketchfab.com/3d-models/vr-room-light-baked-d3d10773cfb34aec975d46db538ff59e")
                 }
-                else if(pickedType === "goToHeightmapCredit"){
+                else if (pickedType === "goToHeightmapCredit") {
                     window.open("https://upload.wikimedia.org/wikipedia/commons/8/8b/Thailand_location_relief_map.svg")
                 }
                 cameraPosition = view.pos.clone();
@@ -1131,7 +1145,7 @@
             function onHover(e) {
                 setPointer(e);
                 raycaster.setFromCamera(pointer, camera);
-                
+
                 const objectsToCheck = [];
                 if (theMan) objectsToCheck.push(theMan);
                 if (nextBtnPBR) objectsToCheck.push(nextBtnPBR);
@@ -1203,8 +1217,8 @@
                         welcome.style.color = "gold"
                         welcome.textContent = "กดที่กล่อง"
                         welcome.classList.remove("slideIn");
-                        fadeOutModel(myPic, 1000);
-                        fadeOutModel(myInfo, 1000);
+                        // fadeOutModel(myPic, 1000);
+                        // fadeOutModel(myInfo, 1000);
                     }
                 }
                 else if (!stopControlsCamera) {
@@ -1356,7 +1370,7 @@
                         ansQuestion.textContent = "..."
                     }, 1500)
                     setTimeout(() => {
-                        ansQuestion.textContent = "21 ครับผม"
+                        ansQuestion.textContent = "21 จ้า"
                     }, 2000)
                     setTimeout(() => {
                         ansQuestion.textContent = "."
